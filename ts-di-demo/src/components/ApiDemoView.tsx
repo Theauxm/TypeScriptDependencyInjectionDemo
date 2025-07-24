@@ -136,7 +136,7 @@ export const ApiDemoView: React.FC = () => {
         <h4>Technical Details:</h4>
         <ul>
           <li>Service retrieved via: <code>useService&lt;ICustomerService&gt;('ICustomerService')</code></li>
-          <li>Factory type: <code>CustomerServiceFactory</code> (Singleton)</li>
+          <li>Factory type: <code>{AppConfig.USE_REAL_API ? 'RealCustomerServiceFactory' : 'FakeCustomerServiceFactory'}</code> (Singleton)</li>
           <li>Implementation: <code>{AppConfig.USE_REAL_API ? 'RealCustomerService' : 'FakeCustomerService'}</code></li>
           <li>Error handling: Service-level error management with user-friendly messages</li>
           <li>Loading states: Async operation feedback with loading indicators</li>

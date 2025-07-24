@@ -3,7 +3,9 @@ import { ServiceProvider } from './di/ServiceProvider';
 import { ServiceCollection } from './di/ServiceCollection';
 import { ColorServiceFactory } from './di/factories/ColorServiceFactory';
 import { CountServiceFactory } from './di/factories/CountServiceFactory';
-import { CustomerServiceFactory } from './di/factories/CustomerServiceFactory';
+import { RealCustomerServiceFactory } from './di/factories/RealCustomerServiceFactory';
+import { FakeCustomerServiceFactory } from './di/factories/FakeCustomerServiceFactory';
+import { AppConfig } from './config/AppConfig';
 import { View1 } from './components/View1';
 import { View2 } from './components/View2';
 import { View3 } from './components/View3';
@@ -23,8 +25,12 @@ const createServiceCollection = (): ServiceCollection => {
   // Register scoped CountService
   services.register('ICountService', new CountServiceFactory());
   
-  // Register singleton CustomerService
-  services.register('ICustomerService', new CustomerServiceFactory());
+  // Register singleton CustomerService - configuration-driven factory selection
+  if (AppConfig.USE_REAL_API) {
+    services.register('ICustomerService', new RealCustomerServiceFactory());
+  } else {
+    services.register('ICustomerService', new FakeCustomerServiceFactory());
+  }
   
   return services;
 };
