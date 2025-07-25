@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 // import { useService } from '../di/useService';
 // import { ICountService } from '../di/interfaces/ICountService';
 import { CountServiceFactory } from '../di/factories/CountServiceFactory';
@@ -36,7 +36,7 @@ export const View3: React.FC<{ viewTitle: string }> = ({
         </button>
       </div>
 
-      {isMounted && <CounterComponent key={mountKey} viewName="View 3" />}
+      {isMounted && <CounterComponent key={mountKey} viewName={viewTitle} />}
       
       <div className="technical-info">
         <h4>Technical Details:</h4>
@@ -51,13 +51,11 @@ export const View3: React.FC<{ viewTitle: string }> = ({
   );
 };
 
-// Service instantiation _outside_ of the component,
-// to not create a new service instance every time this component renders
-const countService = new CountService();
-// This works too, but it's not necessary
-// const countService = new CountServiceFactory().Create();
-
 const CounterComponent: React.FC<{ viewName: string }> = ({ viewName }) => {
+  const { current: countService } = React.useRef(new CountService());
+  // This works too, but it's not necessary
+  // const countService = new CountServiceFactory().Create();
+
   const [currentCount, setCurrentCount] = useState(countService.getCount());
 
   useEffect(() => {
