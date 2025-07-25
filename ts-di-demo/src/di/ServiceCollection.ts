@@ -6,7 +6,7 @@ import { FakeCustomerService } from "./services/FakeCustomerService";
 import { PaymentService } from "./services/PaymentService";
 import { RealCustomerService } from "./services/RealCustomerService";
 
-// Instances created along with the app making them globally
+// Instances created along with the app making them globally available
 const SingletonServices = {
   ColorService: new ColorService(),
   CustomerService: AppConfig.USE_REAL_API
@@ -19,7 +19,7 @@ type SingletonServicesType = {
 };
 
 export const ServiceCollection = {
-  // Maps singletons to a function that returns the global instance 
+  // Maps singletons to a function that returns the global instance
   Singleton: Object.fromEntries(
     Object.entries(SingletonServices).map(([key, service]) => [
       key,
