@@ -16,8 +16,9 @@ import { ColorContextProvider } from './contexts/color-context-provider';
 
 type DemoMode = 'di' | 'api';
 
-// NOTE: This is _actually_ ☝️🤓 creating an instance of the service
-// for the _entire_ application. Even for the "scoped" components
+// NOTE: This is _actually_ ☝️🤓 creating instances of the service factories
+// for the _entire_ application. Even for the "scoped" components.
+// But it is technically not creating all the actual services instances.
 //
 // Create and configure the service collection
 // const createServiceCollection = (): ServiceCollection => {
