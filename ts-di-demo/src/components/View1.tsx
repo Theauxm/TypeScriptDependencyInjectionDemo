@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useService } from '../di/useService';
 import { IColorService } from '../di/interfaces/IColorService';
 
-export const View1: React.FC = () => {
+export const ColorServiceConsumerView: React.FC<{ viewTitle: string }> = ({
+  viewTitle,
+}) => {
   const [isMounted, setIsMounted] = useState(true);
   const [mountKey, setMountKey] = useState(0);
 
@@ -17,10 +19,10 @@ export const View1: React.FC = () => {
 
   return (
     <div className="view">
-      <h2>View 1 - Singleton Color Service</h2>
+      <h2>{viewTitle} - Singleton Color Service</h2>
       <div className="service-info">
         <p>This view uses a <strong>singleton</strong> IColorService instance.</p>
-        <p>Changes made here will be reflected in View 2 as well.</p>
+        <p>Changes made here will be reflected in all instances.</p>
         <p><strong>Note:</strong> Unmounting and remounting preserves the singleton's state!</p>
       </div>
       
@@ -33,7 +35,7 @@ export const View1: React.FC = () => {
         </button>
       </div>
 
-      {isMounted && <ColorComponent key={mountKey} viewName="View 1" />}
+      {isMounted && <ColorComponent key={mountKey} viewName={viewTitle} />}
       
       <div className="technical-info">
         <h4>Technical Details:</h4>
