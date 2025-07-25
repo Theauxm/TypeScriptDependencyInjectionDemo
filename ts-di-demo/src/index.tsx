@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { initializeServices } from './di/ServiceRegistration';
+import { initializeServices } from './di';
 
 // Initialize the dependency injection container
 initializeServices();

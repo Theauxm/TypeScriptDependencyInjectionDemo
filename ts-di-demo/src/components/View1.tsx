@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useService } from '../di/useService';
+import { useService } from '../di';
 import { IColorService } from '../di/services/ColorService/IColorService';
 
 export const View1: React.FC = () => {

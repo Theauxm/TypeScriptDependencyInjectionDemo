@@ -1,9 +1,9 @@
-import { ServiceContainer } from './ServiceContainer';
-import { ColorService } from './services/ColorService/ColorService';
-import { CountService } from './services/CountService/CountService';
-import { RealCustomerService } from './services/CustomerService/RealCustomerService';
-import { FakeCustomerService } from './services/CustomerService/FakeCustomerService';
-import { AppConfig } from '../config/AppConfig';
+import { ServiceContainer } from '../internal/ServiceContainer';
+import { ColorService } from '../services/ColorService/ColorService';
+import { CountService } from '../services/CountService/CountService';
+import { RealCustomerService } from '../services/CustomerService/RealCustomerService';
+import { FakeCustomerService } from '../services/CustomerService/FakeCustomerService';
+import { AppConfig } from '../../config/AppConfig';
 
 /**
  * Configures and registers all services in the dependency injection container

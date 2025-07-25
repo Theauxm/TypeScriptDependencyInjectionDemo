@@ -1,5 +1,5 @@
 import { IColorService } from './IColorService';
-import { Injectable } from '../../decorators';
+import { Injectable } from '../../internal/decorators';
 
 /**
  * Concrete implementation of IColorService that manages RGB color state.

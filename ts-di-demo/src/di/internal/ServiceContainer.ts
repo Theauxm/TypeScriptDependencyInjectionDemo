@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { ServiceRegistry, ServiceKey, ServiceType } from './ServiceRegistry';
+import { ServiceRegistry, ServiceKey, ServiceType } from '../registration/ServiceRegistry';
 
 /**
  * Service lifetime enumeration for dependency injection.

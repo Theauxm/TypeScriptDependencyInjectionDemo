@@ -1,6 +1,6 @@
 import { useRef } from 'react';
-import { ServiceContainer } from './ServiceContainer';
-import { ServiceKey, ServiceType } from './ServiceRegistry';
+import { ServiceContainer } from '../internal/ServiceContainer';
+import { ServiceKey, ServiceType } from '../registration/ServiceRegistry';
 
 /**
  * React hook for accessing services from the dependency injection container.
@@ -29,5 +29,5 @@ export function useService<K extends ServiceKey>(serviceKey: K): ServiceType<K> 
     instanceRef.current = ServiceContainer.getInstance().resolve(serviceKey);
   }
   
-  return instanceRef.current;
+  return instanceRef.current!;
 }

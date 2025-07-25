@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { initializeServices } from './di/ServiceRegistration';
+import { initializeServices } from './di';
 import { View1 } from './components/View1';
 import { View2 } from './components/View2';
 import { View3 } from './components/View3';

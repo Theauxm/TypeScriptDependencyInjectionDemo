@@ -1,6 +1,6 @@
-import { IColorService } from './services/ColorService/IColorService';
-import { ICountService } from './services/CountService/ICountService';
-import { ICustomerService } from './services/CustomerService/ICustomerService';
+import { IColorService } from '../services/ColorService/IColorService';
+import { ICountService } from '../services/CountService/ICountService';
+import { ICustomerService } from '../services/CustomerService/ICustomerService';
 
 /**
  * Service Registry interface that maps service keys to their types.

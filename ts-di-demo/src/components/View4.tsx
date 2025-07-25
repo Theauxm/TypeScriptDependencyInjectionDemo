@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useService } from '../di/useService';
+import { useService } from '../di';
 import { ICountService } from '../di/services/CountService/ICountService';
 
 export const View4: React.FC = () => {
