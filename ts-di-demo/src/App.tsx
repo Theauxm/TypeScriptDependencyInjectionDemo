@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 import { ColorServiceConsumerView } from './components/View1';
 // import { View2 } from './components/View2';
 import { View3 } from './components/View3';
-import { View4 } from './components/View4';
+// import { View4 } from './components/View4';
 import { ApiDemoView } from './components/ApiDemoView';
 import './App.css';
 import { ColorContextProvider } from './contexts/color-context-provider';
@@ -63,10 +63,10 @@ const App: React.FC = () => {
           </div>
         </ColorContextProvider>
         <div className="view-container">
-          <View3 />
+          <View3 viewTitle={'View3'} />
         </div>
         <div className="view-container">
-          <View4 />
+          <View3 viewTitle={'View4'} />
         </div>
       </div>
     );
