@@ -15,11 +15,16 @@ interface ColorContextState {
 
 const ColorContext = createContext<ColorContextState | null>(null);
 
+// Service instantiation _outside_ of the context,
+// to not create a new service instance every time this context renders
+// Instantiate the shared service
+const colorService = new ColorService();
+// This works too, but it's not necessary
+// const colorService = new ColorServiceFactory().Create();
+
 export const ColorContextProvider: React.FC<{ children: ReactNode }> = (
   props
 ) => {
-  // Instantiate the shared service
-  const colorService = new ColorServiceFactory().Create();
   const [currentColor, setCurrentColor] = useState(colorService.getRgbColor());
 
   useEffect(() => {
@@ -47,7 +52,9 @@ export const ColorContextProvider: React.FC<{ children: ReactNode }> = (
 export const useColorContext = () => {
   const context = React.useContext(ColorContext);
   if (context === null) {
-    throw new Error("useColorContext must be used within a ColorContextProvider");
+    throw new Error(
+      "useColorContext must be used within a ColorContextProvider"
+    );
   }
   return context;
 };
