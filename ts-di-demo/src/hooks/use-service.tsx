@@ -2,13 +2,18 @@ import { useRef } from "react";
 import { ServiceCollection } from "../di/ServiceCollection";
 import { IServiceFactory } from "../di/interfaces/IServiceFactory";
 
-type ExtractServiceType<T> = T extends IServiceFactory<infer U> ? U : never;
+type ServiceName = keyof typeof ServiceCollection;
+type Service<T extends ServiceName> = (typeof ServiceCollection)[T];
+type ServiceType<T> = T extends IServiceFactory<infer U> ? U : never;
 
-export const useService = <T extends keyof typeof ServiceCollection>(
-  serviceKey: T
-) => {
+// Useful to use anywhere outside of react components
+export const getServiceFactory = <T extends ServiceName>(serviceKey: T) =>
+  ServiceCollection[serviceKey];
+
+// Only usable within react components
+export const useService = <T extends ServiceName>(serviceKey: T) => {
   // useRef required to not re-create a service instance
   // and tie this reference to the lifecycle of the component using it
-  const serviceRef = useRef(ServiceCollection[serviceKey].Create());
-  return serviceRef.current as ExtractServiceType<typeof ServiceCollection[T]>;
+  const serviceRef = useRef(getServiceFactory(serviceKey).Create());
+  return serviceRef.current as ServiceType<Service<T>>;
 };
