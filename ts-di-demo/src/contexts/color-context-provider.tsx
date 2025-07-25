@@ -1,12 +1,10 @@
 import React, {
-  ComponentProps,
   createContext,
   ReactNode,
   useEffect,
   useState,
 } from "react";
-import { ColorService } from "../di/services/ColorService";
-import { ColorServiceFactory } from "../di/factories/ColorServiceFactory";
+import {ServiceCollection} from "../di/ServiceCollection";
 
 interface ColorContextState {
   color: string;
@@ -18,7 +16,7 @@ const ColorContext = createContext<ColorContextState | null>(null);
 // Service instantiation _outside_ of the context,
 // to not create a new service instance every time this context renders
 // Instantiate the shared service
-const colorService = new ColorService();
+const colorService = ServiceCollection.ColorServiceFactory.Create();
 // This works too, but it's not necessary
 // const colorService = new ColorServiceFactory().Create();
 

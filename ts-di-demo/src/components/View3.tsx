@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CountService } from '../di/services/CountService';
+import { ServiceCollection } from '../di/ServiceCollection';
 
 export const View3: React.FC<{ viewTitle: string }> = ({
   viewTitle,
@@ -50,7 +50,7 @@ export const View3: React.FC<{ viewTitle: string }> = ({
 
 const CounterComponent: React.FC<{ viewName: string }> = ({ viewName }) => {
   // useRef required to not re-create a service instance when this component re-renders
-  const { current: countService } = React.useRef(new CountService());
+  const { current: countService } = React.useRef(ServiceCollection.CountServiceFactory.Create());
   // This works too, but it's not necessary
   // const { current: countService } = React.useRef(new CountServiceFactory().Create());
 

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Customer } from '../types/CustomerTypes';
 import { AppConfig } from '../config/AppConfig';
-import { FakeCustomerService } from '../di/services/FakeCustomerService';
-import { RealCustomerService } from '../di/services/RealCustomerService';
+import { ServiceCollection } from '../di/ServiceCollection';
 
-const customerService = AppConfig.USE_REAL_API ? new RealCustomerService() : new FakeCustomerService();
+const customerService = ServiceCollection.CustomerServiceFactory.Create();
 
 export const ApiDemoView: React.FC = () => {
   const [customers, setCustomers] = useState<Customer[]>([]);
