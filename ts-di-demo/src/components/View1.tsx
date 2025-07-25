@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useService } from '../di/useService';
-import { IColorService } from '../di/interfaces/IColorService';
+import React, { useState, } from 'react';
 import { useColorContext } from '../contexts/color-context-provider';
 
 export const ColorServiceConsumerView: React.FC<{ viewTitle: string }> = ({

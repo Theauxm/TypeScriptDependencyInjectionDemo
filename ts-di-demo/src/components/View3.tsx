@@ -1,7 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-// import { useService } from '../di/useService';
-// import { ICountService } from '../di/interfaces/ICountService';
-import { CountServiceFactory } from '../di/factories/CountServiceFactory';
+import React, { useState, useEffect } from 'react';
 import { CountService } from '../di/services/CountService';
 
 export const View3: React.FC<{ viewTitle: string }> = ({
