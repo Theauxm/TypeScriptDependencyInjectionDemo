@@ -1,20 +1,41 @@
-import { ServiceCollection } from './ServiceCollection';
+import 'reflect-metadata';
 import { ServiceRegistry, ServiceKey, ServiceType } from './ServiceRegistry';
-import { IServiceFactory } from './interfaces/IServiceFactory';
 
 /**
- * Global singleton service container that manages the service collection
- * without relying on React Context. This container is initialized once
- * at application startup and provides type-safe service resolution.
+ * Service lifetime enumeration for dependency injection.
+ */
+export enum ServiceLifetime {
+  Singleton,
+  Transient
+}
+
+/**
+ * Type for service constructors.
+ */
+type ServiceConstructor<T> = new (...args: any[]) => T;
+
+/**
+ * Internal service registration information.
+ */
+interface ServiceRegistration<T> {
+  lifetime: ServiceLifetime;
+  constructor: ServiceConstructor<T>;
+  dependencies: string[];
+}
+
+/**
+ * Global singleton service container that manages services with decorator-based
+ * dependency injection. This container supports both Singleton and Transient
+ * lifecycles with automatic dependency resolution.
  */
 export class ServiceContainer {
   private static instance: ServiceContainer | null = null;
-  private serviceCollection: ServiceCollection;
+  private services = new Map<string, ServiceRegistration<any>>();
+  private singletonInstances = new Map<string, any>();
+  private isResolving = new Set<string>();
   private isInitialized: boolean = false;
 
-  private constructor() {
-    this.serviceCollection = new ServiceCollection();
-  }
+  private constructor() {}
 
   /**
    * Gets the singleton instance of the ServiceContainer.
@@ -47,14 +68,16 @@ export class ServiceContainer {
   }
 
   /**
-   * Registers a service factory with type safety.
+   * Registers a service with the container using decorator-based dependency injection.
    * 
    * @param serviceKey - Type-safe service key from ServiceRegistry
-   * @param factory - Factory that creates instances of the service
+   * @param constructor - Constructor function for the service
+   * @param lifetime - Service lifetime (Singleton or Transient)
    */
   public register<K extends ServiceKey>(
     serviceKey: K,
-    factory: IServiceFactory<ServiceType<K>>
+    constructor: ServiceConstructor<ServiceType<K>>,
+    lifetime: ServiceLifetime = ServiceLifetime.Transient
   ): void {
     if (this.isInitialized) {
       throw new Error(
@@ -62,11 +85,45 @@ export class ServiceContainer {
         'All services must be registered during the initialization phase.'
       );
     }
-    this.serviceCollection.register(serviceKey, factory);
+
+    // Get dependency metadata from decorator
+    const dependencies = Reflect.getMetadata('inject:dependencies', constructor) || [];
+    
+    this.services.set(serviceKey, {
+      lifetime,
+      constructor,
+      dependencies
+    });
   }
 
   /**
-   * Resolves a service instance with full type safety.
+   * Registers a service as a singleton.
+   * 
+   * @param serviceKey - Type-safe service key from ServiceRegistry
+   * @param constructor - Constructor function for the service
+   */
+  public registerSingleton<K extends ServiceKey>(
+    serviceKey: K,
+    constructor: ServiceConstructor<ServiceType<K>>
+  ): void {
+    this.register(serviceKey, constructor, ServiceLifetime.Singleton);
+  }
+
+  /**
+   * Registers a service as transient (new instance each time).
+   * 
+   * @param serviceKey - Type-safe service key from ServiceRegistry
+   * @param constructor - Constructor function for the service
+   */
+  public registerTransient<K extends ServiceKey>(
+    serviceKey: K,
+    constructor: ServiceConstructor<ServiceType<K>>
+  ): void {
+    this.register(serviceKey, constructor, ServiceLifetime.Transient);
+  }
+
+  /**
+   * Resolves a service instance with full type safety and automatic dependency injection.
    * 
    * @param serviceKey - Type-safe service key from ServiceRegistry
    * @returns The service instance of the correct type
@@ -78,8 +135,36 @@ export class ServiceContainer {
       );
     }
 
-    const factory = this.serviceCollection.getFactory<ServiceType<K>>(serviceKey);
-    return factory.Create();
+    // Circular dependency detection
+    if (this.isResolving.has(serviceKey)) {
+      throw new Error(`Circular dependency detected for service: ${serviceKey}`);
+    }
+
+    const registration = this.services.get(serviceKey);
+    if (!registration) {
+      throw new Error(`Service ${serviceKey} is not registered. Make sure to register the service before using it.`);
+    }
+
+    // Return cached singleton if exists
+    if (registration.lifetime === ServiceLifetime.Singleton && this.singletonInstances.has(serviceKey)) {
+      return this.singletonInstances.get(serviceKey);
+    }
+
+    // Resolve dependencies and create instance
+    this.isResolving.add(serviceKey);
+    try {
+      const resolvedDeps = registration.dependencies.map(dep => this.resolve(dep as ServiceKey));
+      const instance = new registration.constructor(...resolvedDeps);
+      
+      // Cache singleton instances
+      if (registration.lifetime === ServiceLifetime.Singleton) {
+        this.singletonInstances.set(serviceKey, instance);
+      }
+      
+      return instance;
+    } finally {
+      this.isResolving.delete(serviceKey);
+    }
   }
 
   /**
@@ -89,7 +174,7 @@ export class ServiceContainer {
    * @returns True if the service is registered, false otherwise
    */
   public isRegistered<K extends ServiceKey>(serviceKey: K): boolean {
-    return this.serviceCollection.isRegistered(serviceKey);
+    return this.services.has(serviceKey);
   }
 
   /**

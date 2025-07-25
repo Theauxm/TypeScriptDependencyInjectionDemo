@@ -3,31 +3,31 @@ import { ServiceContainer } from './ServiceContainer';
 import { ServiceKey, ServiceType } from './ServiceRegistry';
 
 /**
- * Type-safe hook for accessing services from the global dependency injection container.
- * This hook retrieves services directly from the ServiceContainer without relying on
- * React Context, providing better performance and cleaner architecture.
+ * React hook for accessing services from the dependency injection container.
+ * This hook provides type-safe service resolution with proper React lifecycle management.
  * 
- * For scoped services, the instance is cached per component instance to ensure
- * the same service instance is used throughout the component's lifecycle.
- * For singleton services, the factory handles the caching internally.
+ * - Singleton services: Cached at container level, shared across all components
+ * - Transient services: Cached per component instance using useRef to maintain state
+ *   during the component's lifecycle while still being independent between components
  * 
- * @template K - The service key type (must be a key from ServiceRegistry)
  * @param serviceKey - Type-safe service key from ServiceRegistry
- * @returns The service instance with full type safety
+ * @returns The resolved service instance with correct typing
  * 
  * @example
- * const colorService = useService('IColorService');    // Type: IColorService
- * const countService = useService('ICountService');    // Type: ICountService
- * const customerService = useService('ICustomerService'); // Type: ICustomerService
+ * ```typescript
+ * const colorService = useService('IColorService'); // Singleton - shared across components
+ * const countService = useService('ICountService'); // Transient - unique per component
+ * ```
  */
 export function useService<K extends ServiceKey>(serviceKey: K): ServiceType<K> {
-  const serviceRef = useRef<ServiceType<K> | null>(null);
-
-  // Only create the service instance once per component instance
-  if (serviceRef.current === null) {
-    const container = ServiceContainer.getInstance();
-    serviceRef.current = container.resolve(serviceKey);
+  const instanceRef = useRef<ServiceType<K> | null>(null);
+  
+  // Only resolve once per component instance
+  // Singletons will be cached at container level
+  // Transients will be cached per component via useRef
+  if (instanceRef.current === null) {
+    instanceRef.current = ServiceContainer.getInstance().resolve(serviceKey);
   }
-
-  return serviceRef.current;
+  
+  return instanceRef.current;
 }

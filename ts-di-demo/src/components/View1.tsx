@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useService } from '../di/useService';
-import { IColorService } from '../di/interfaces/IColorService';
+import { IColorService } from '../di/services/ColorService/IColorService';
 
 export const View1: React.FC = () => {
   const [isMounted, setIsMounted] = useState(true);
@@ -39,7 +39,7 @@ export const View1: React.FC = () => {
         <h4>Technical Details:</h4>
         <ul>
           <li>Service retrieved via: <code>useService&lt;IColorService&gt;('IColorService')</code></li>
-          <li>Factory type: <code>ColorServiceFactory</code> (Singleton)</li>
+          <li>Lifecycle: <code>Singleton</code> (container-managed)</li>
           <li>Same instance shared across all consumers</li>
           <li>State persists across component mount/unmount cycles</li>
         </ul>

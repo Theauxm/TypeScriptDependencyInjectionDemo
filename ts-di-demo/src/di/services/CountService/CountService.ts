@@ -1,9 +1,11 @@
-import { ICountService } from '../interfaces/ICountService';
+import { ICountService } from './ICountService';
+import { Injectable } from '../../decorators';
 
 /**
  * Concrete implementation of ICountService that manages counter state.
  * This service maintains a count value and notifies subscribers of changes.
  */
+@Injectable
 export class CountService implements ICountService {
   private count: number = 0;
   private subscribers: (() => void)[] = [];

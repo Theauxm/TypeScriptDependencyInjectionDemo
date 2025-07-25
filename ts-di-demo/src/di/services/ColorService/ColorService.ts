@@ -1,9 +1,11 @@
-import { IColorService } from '../interfaces/IColorService';
+import { IColorService } from './IColorService';
+import { Injectable } from '../../decorators';
 
 /**
  * Concrete implementation of IColorService that manages RGB color state.
  * This service maintains a current color and notifies subscribers of changes.
  */
+@Injectable
 export class ColorService implements IColorService {
   private currentColor: { r: number; g: number; b: number };
   private subscribers: (() => void)[] = [];

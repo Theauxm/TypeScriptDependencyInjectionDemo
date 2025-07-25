@@ -1,32 +1,31 @@
 import { ServiceContainer } from './ServiceContainer';
-import { ColorServiceFactory } from './factories/ColorServiceFactory';
-import { CountServiceFactory } from './factories/CountServiceFactory';
-import { RealCustomerServiceFactory } from './factories/RealCustomerServiceFactory';
-import { FakeCustomerServiceFactory } from './factories/FakeCustomerServiceFactory';
+import { ColorService } from './services/ColorService/ColorService';
+import { CountService } from './services/CountService/CountService';
+import { RealCustomerService } from './services/CustomerService/RealCustomerService';
+import { FakeCustomerService } from './services/CustomerService/FakeCustomerService';
 import { AppConfig } from '../config/AppConfig';
 
 /**
- * Configures and registers all services in the dependency injection container.
- * This function encapsulates all service registration logic in a single place,
- * making it easy to manage and modify service configurations.
+ * Configures and registers all services in the dependency injection container
+ * using the new decorator-based system with explicit lifecycle management.
  * 
  * @param container - The ServiceContainer instance to register services with
  */
 export function configureServices(container: ServiceContainer): void {
   // Register singleton ColorService
   // This service maintains shared state across all consumers
-  container.register('IColorService', new ColorServiceFactory());
+  container.registerSingleton('IColorService', ColorService);
   
-  // Register scoped CountService
-  // Each component gets its own instance via useRef caching
-  container.register('ICountService', new CountServiceFactory());
+  // Register transient CountService
+  // Each component gets its own instance
+  container.registerTransient('ICountService', CountService);
   
-  // Register singleton CustomerService with configuration-driven factory selection
+  // Register singleton CustomerService with configuration-driven implementation selection
   // The implementation is chosen based on AppConfig.USE_REAL_API setting
   if (AppConfig.USE_REAL_API) {
-    container.register('ICustomerService', new RealCustomerServiceFactory());
+    container.registerSingleton('ICustomerService', RealCustomerService);
   } else {
-    container.register('ICustomerService', new FakeCustomerServiceFactory());
+    container.registerSingleton('ICustomerService', FakeCustomerService);
   }
 }
 

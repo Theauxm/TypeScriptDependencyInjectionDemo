@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useService } from '../di/useService';
-import { ICustomerService } from '../di/interfaces/ICustomerService';
+import { ICustomerService } from '../di/services/CustomerService/ICustomerService';
 import { Customer } from '../types/CustomerTypes';
 import { AppConfig } from '../config/AppConfig';
 
