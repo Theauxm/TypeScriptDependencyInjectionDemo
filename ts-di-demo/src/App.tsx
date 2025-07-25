@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { ServiceProvider } from './di/ServiceProvider';
-import { ServiceCollection } from './di/ServiceCollection';
-import { ColorServiceFactory } from './di/factories/ColorServiceFactory';
-import { CountServiceFactory } from './di/factories/CountServiceFactory';
-import { RealCustomerServiceFactory } from './di/factories/RealCustomerServiceFactory';
-import { FakeCustomerServiceFactory } from './di/factories/FakeCustomerServiceFactory';
-import { AppConfig } from './config/AppConfig';
+// import { ServiceProvider } from './di/ServiceProvider';
+// import { ServiceCollection } from './di/ServiceCollection';
+// import { ColorServiceFactory } from './di/factories/ColorServiceFactory';
+// import { CountServiceFactory } from './di/factories/CountServiceFactory';
+// import { RealCustomerServiceFactory } from './di/factories/RealCustomerServiceFactory';
+// import { FakeCustomerServiceFactory } from './di/factories/FakeCustomerServiceFactory';
+// import { AppConfig } from './config/AppConfig';
 import { View1 } from './components/View1';
 import { View2 } from './components/View2';
 import { View3 } from './components/View3';
@@ -15,28 +15,31 @@ import './App.css';
 
 type DemoMode = 'di' | 'api';
 
+// NOTE: This is _actually_ ☝️🤓 creating an instance of the service
+// for the _entire_ application. Even for the "scoped" components
+//
 // Create and configure the service collection
-const createServiceCollection = (): ServiceCollection => {
-  const services = new ServiceCollection();
+// const createServiceCollection = (): ServiceCollection => {
+//   const services = new ServiceCollection();
   
-  // Register singleton ColorService
-  services.register('IColorService', new ColorServiceFactory());
+//   // Register singleton ColorService
+//   services.register('IColorService', new ColorServiceFactory());
   
-  // Register scoped CountService
-  services.register('ICountService', new CountServiceFactory());
+//   // Register scoped CountService
+//   services.register('ICountService', new CountServiceFactory());
   
-  // Register singleton CustomerService - configuration-driven factory selection
-  if (AppConfig.USE_REAL_API) {
-    services.register('ICustomerService', new RealCustomerServiceFactory());
-  } else {
-    services.register('ICustomerService', new FakeCustomerServiceFactory());
-  }
+//   // Register singleton CustomerService - configuration-driven factory selection
+//   if (AppConfig.USE_REAL_API) {
+//     services.register('ICustomerService', new RealCustomerServiceFactory());
+//   } else {
+//     services.register('ICustomerService', new FakeCustomerServiceFactory());
+//   }
   
-  return services;
-};
+//   return services;
+// };
 
 const App: React.FC = () => {
-  const [services] = useState(() => createServiceCollection());
+  // const [services] = useState(() => createServiceCollection());
   const [demoMode, setDemoMode] = useState<DemoMode>('di');
 
   const renderContent = () => {
@@ -108,7 +111,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <ServiceProvider services={services}>
+    // <ServiceProvider services={services}>
       <div className="app">
         <header className="app-header">
           <h1>TypeScript Dependency Injection Demo</h1>
@@ -136,7 +139,7 @@ const App: React.FC = () => {
         
         {renderFooter()}
       </div>
-    </ServiceProvider>
+    // </ServiceProvider>
   );
 };
 
