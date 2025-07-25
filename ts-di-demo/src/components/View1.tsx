@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useService } from '../di/useService';
 import { IColorService } from '../di/interfaces/IColorService';
+import { useColorContext } from '../contexts/color-context-provider';
 
 export const ColorServiceConsumerView: React.FC<{ viewTitle: string }> = ({
   viewTitle,
@@ -51,35 +52,21 @@ export const ColorServiceConsumerView: React.FC<{ viewTitle: string }> = ({
 };
 
 const ColorComponent: React.FC<{ viewName: string }> = ({ viewName }) => {
-  const colorService = useService<IColorService>('IColorService');
-  const [currentColor, setCurrentColor] = useState(colorService.getRgbColor());
-
-  useEffect(() => {
-    // Subscribe to color changes
-    const unsubscribe = colorService.subscribe(() => {
-      setCurrentColor(colorService.getRgbColor());
-    });
-
-    return unsubscribe;
-  }, [colorService]);
-
-  const handleGenerateColor = () => {
-    colorService.generateNewColor();
-  };
+  const colorContext= useColorContext();
 
   return (
     <div className="color-demo">
       <div 
         className="color-box"
-        style={{ backgroundColor: currentColor }}
-        title={`Current color: ${currentColor}`}
+        style={{ backgroundColor: colorContext.color }}
+        title={`Current color: ${colorContext.color}`}
       >
-        <span className="color-text">{currentColor}</span>
+        <span className="color-text">{colorContext.color}</span>
       </div>
       
       <button 
         className="action-button"
-        onClick={handleGenerateColor}
+        onClick={colorContext.generateColor}
       >
         Generate New Color
       </button>

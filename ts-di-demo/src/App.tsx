@@ -6,12 +6,13 @@ import React, { useState } from 'react';
 // import { RealCustomerServiceFactory } from './di/factories/RealCustomerServiceFactory';
 // import { FakeCustomerServiceFactory } from './di/factories/FakeCustomerServiceFactory';
 // import { AppConfig } from './config/AppConfig';
-import { View1 } from './components/View1';
-import { View2 } from './components/View2';
+import { ColorServiceConsumerView } from './components/View1';
+// import { View2 } from './components/View2';
 import { View3 } from './components/View3';
 import { View4 } from './components/View4';
 import { ApiDemoView } from './components/ApiDemoView';
 import './App.css';
+import { ColorContextProvider } from './contexts/color-context-provider';
 
 type DemoMode = 'di' | 'api';
 
@@ -53,12 +54,14 @@ const App: React.FC = () => {
 
     return (
       <div className="views-grid">
-        <div className="view-container">
-          <View1 />
-        </div>
-        <div className="view-container">
-          <View2 />
-        </div>
+        <ColorContextProvider>
+          <div className="view-container">
+            <ColorServiceConsumerView viewTitle={'View 1'} />
+          </div>
+          <div className="view-container">
+            <ColorServiceConsumerView viewTitle={'View 2'} />
+          </div>
+        </ColorContextProvider>
         <div className="view-container">
           <View3 />
         </div>
