@@ -5,6 +5,7 @@ import { useService } from '../hooks/use-service';
 
 export const ApiDemoView: React.FC = () => {
   const customerService = useService('CustomerServiceFactory');
+  const paymentsService = useService("PaymentServiceFactory");
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -122,6 +123,15 @@ export const ApiDemoView: React.FC = () => {
               </tbody>
             </table>
           </div>
+          <br />
+          <button
+            className="action-button"
+            onClick={() => {
+              paymentsService.processPayment();
+            }}
+          >
+            Make a Payment
+          </button>
         </div>
       )}
 
