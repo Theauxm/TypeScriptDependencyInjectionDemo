@@ -1,10 +1,5 @@
-import React, {
-  createContext,
-  ReactNode,
-  useEffect,
-  useState,
-} from "react";
-import {ServiceCollection} from "../di/ServiceCollection";
+import React, { createContext, ReactNode, useEffect, useState } from "react";
+import { useService } from "../hooks/use-service";
 
 interface ColorContextState {
   color: string;
@@ -13,14 +8,10 @@ interface ColorContextState {
 
 const ColorContext = createContext<ColorContextState | null>(null);
 
-// Service instantiation _outside_ of the context,
-// to not create a new service instance every time this context renders
-// Instantiate the shared service
-const colorService = ServiceCollection.ColorServiceFactory.Create();
-
 export const ColorContextProvider: React.FC<{ children: ReactNode }> = (
   props
 ) => {
+  const colorService = useService("ColorServiceFactory");
   const [currentColor, setCurrentColor] = useState(colorService.getRgbColor());
 
   useEffect(() => {
