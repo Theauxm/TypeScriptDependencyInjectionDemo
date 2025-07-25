@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useService } from '../di/useService';
-import { ICountService } from '../di/interfaces/ICountService';
+// import { useService } from '../di/useService';
+// import { ICountService } from '../di/interfaces/ICountService';
+import { CountServiceFactory } from '../di/factories/CountServiceFactory';
+import { CountService } from '../di/services/CountService';
 
-export const View3: React.FC = () => {
+export const View3: React.FC<{ viewTitle: string }> = ({
+  viewTitle,
+}) => {
   const [isMounted, setIsMounted] = useState(true);
   const [mountKey, setMountKey] = useState(0);
 
@@ -17,7 +21,7 @@ export const View3: React.FC = () => {
 
   return (
     <div className="view">
-      <h2>View 3 - Scoped Count Service</h2>
+      <h2>{viewTitle} - Scoped Count Service</h2>
       <div className="service-info">
         <p>This view uses a <strong>scoped</strong> ICountService instance.</p>
         <p>Each mount creates a new independent service instance.</p>
@@ -40,15 +44,20 @@ export const View3: React.FC = () => {
           <li>Service retrieved via: <code>useService&lt;ICountService&gt;('ICountService')</code></li>
           <li>Factory type: <code>CountServiceFactory</code> (Scoped)</li>
           <li>New instance created on each component mount</li>
-          <li>Independent from View 4's counter instance</li>
+          <li>Independent from other instance's counter instance</li>
         </ul>
       </div>
     </div>
   );
 };
 
+// Service instantiation _outside_ of the component,
+// to not create a new service instance every time this component renders
+const countService = new CountService();
+// This works too, but it's not necessary
+// const countService = new CountServiceFactory().Create();
+
 const CounterComponent: React.FC<{ viewName: string }> = ({ viewName }) => {
-  const countService = useService<ICountService>('ICountService');
   const [currentCount, setCurrentCount] = useState(countService.getCount());
 
   useEffect(() => {
