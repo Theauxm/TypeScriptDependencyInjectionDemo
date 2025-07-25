@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useService } from '../di/useService';
-import { IColorService } from '../di/interfaces/IColorService';
+import { useService } from '../di';
+import { IColorService } from '../di/services/ColorService/IColorService';
 
 export const View2: React.FC = () => {
   const [isMounted, setIsMounted] = useState(true);
@@ -39,7 +39,7 @@ export const View2: React.FC = () => {
         <h4>Technical Details:</h4>
         <ul>
           <li>Service retrieved via: <code>useService&lt;IColorService&gt;('IColorService')</code></li>
-          <li>Factory type: <code>ColorServiceFactory</code> (Singleton)</li>
+          <li>Lifecycle: <code>Singleton</code> (container-managed)</li>
           <li>Identical instance to View 1 - demonstrates shared state</li>
           <li>State persists across component mount/unmount cycles</li>
         </ul>
@@ -49,7 +49,7 @@ export const View2: React.FC = () => {
 };
 
 const ColorComponent: React.FC<{ viewName: string }> = ({ viewName }) => {
-  const colorService = useService<IColorService>('IColorService');
+  const colorService = useService('IColorService');
   const [currentColor, setCurrentColor] = useState(colorService.getRgbColor());
 
   useEffect(() => {

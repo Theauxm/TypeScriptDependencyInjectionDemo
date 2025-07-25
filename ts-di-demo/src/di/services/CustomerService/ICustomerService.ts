@@ -1,4 +1,4 @@
-import { CustomerDataResult } from '../../types/CustomerTypes';
+import { CustomerDataResult } from '../../../types/CustomerTypes';
 
 /**
  * Interface for customer data service operations.
