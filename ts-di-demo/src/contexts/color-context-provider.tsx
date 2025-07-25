@@ -11,7 +11,7 @@ const ColorContext = createContext<ColorContextState | null>(null);
 export const ColorContextProvider: React.FC<{ children: ReactNode }> = (
   props
 ) => {
-  const colorService = useService("ColorServiceFactory");
+  const colorService = useService("ColorService");
   const [currentColor, setCurrentColor] = useState(colorService.getRgbColor());
 
   useEffect(() => {

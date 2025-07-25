@@ -1,15 +1,34 @@
 import { AppConfig } from "../config/AppConfig";
-import { ColorServiceFactory } from "./factories/ColorServiceFactory";
-import { CountServiceFactory } from "./factories/CountServiceFactory";
-import { FakeCustomerServiceFactory } from "./factories/FakeCustomerServiceFactory";
-import { PaymentServiceFactory } from "./factories/PaymentServiceFactory";
-import { RealCustomerServiceFactory } from "./factories/RealCustomerServiceFactory";
+
+import { ColorService } from "./services/ColorService";
+import { CountService } from "./services/CountService";
+import { FakeCustomerService } from "./services/FakeCustomerService";
+import { PaymentService } from "./services/PaymentService";
+import { RealCustomerService } from "./services/RealCustomerService";
+
+// Instances created along with the app making them globally
+const SingletonServices = {
+  ColorService: new ColorService(),
+  CustomerService: AppConfig.USE_REAL_API
+    ? new RealCustomerService()
+    : new FakeCustomerService(),
+};
+
+type SingletonServicesType = {
+  [K in keyof typeof SingletonServices]: () => typeof SingletonServices[K];
+};
 
 export const ServiceCollection = {
-  ColorServiceFactory: new ColorServiceFactory(),
-  CountServiceFactory: new CountServiceFactory(),
-  CustomerServiceFactory: AppConfig.USE_REAL_API
-    ? new RealCustomerServiceFactory()
-    : new FakeCustomerServiceFactory(),
-  PaymentServiceFactory: new PaymentServiceFactory(),
+  // Maps singletons to a function that returns the global instance 
+  Singleton: Object.fromEntries(
+    Object.entries(SingletonServices).map(([key, service]) => [
+      key,
+      () => service,
+    ])
+  ) as SingletonServicesType,
+  // We register them as functions that return a new instance of the service
+  Transient: {
+    CountService: () => new CountService(),
+    PaymentService: () => new PaymentService(SingletonServices.CustomerService),
+  },
 };

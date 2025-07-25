@@ -4,8 +4,8 @@ import { AppConfig } from '../config/AppConfig';
 import { useService } from '../hooks/use-service';
 
 export const ApiDemoView: React.FC = () => {
-  const customerService = useService('CustomerServiceFactory');
-  const paymentsService = useService("PaymentServiceFactory");
+  const customerService = useService('CustomerService');
+  const paymentsService = useService("PaymentService");
 
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
