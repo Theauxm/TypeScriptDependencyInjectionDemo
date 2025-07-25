@@ -1,44 +1,34 @@
-import { IServiceFactory } from './interfaces/IServiceFactory';
+import { AppConfig } from "../config/AppConfig";
 
-/**
- * Service collection that maintains a registry of service factories.
- * Each service interface can only be registered once to ensure
- * the useService<T>() hook works without ambiguity.
- */
-export class ServiceCollection {
-  private factories = new Map<string, IServiceFactory<any>>();
+import { ColorService } from "./services/ColorService";
+import { CountService } from "./services/CountService";
+import { FakeCustomerService } from "./services/FakeCustomerService";
+import { PaymentService } from "./services/PaymentService";
+import { RealCustomerService } from "./services/RealCustomerService";
 
-  /**
-   * Registers a factory for a service interface.
-   * @param serviceKey - Unique key identifying the service interface
-   * @param factory - Factory instance that creates the service
-   */
-  register<T>(serviceKey: string, factory: IServiceFactory<T>): void {
-    if (this.factories.has(serviceKey)) {
-      throw new Error(`Service ${serviceKey} is already registered. Only one registration per service interface is allowed.`);
-    }
-    this.factories.set(serviceKey, factory);
-  }
+// Instances created along with the app making them globally available
+const SingletonServices = {
+  ColorService: new ColorService(),
+  CustomerService: AppConfig.USE_REAL_API
+    ? new RealCustomerService()
+    : new FakeCustomerService(),
+};
 
-  /**
-   * Gets the factory for a service interface.
-   * @param serviceKey - Unique key identifying the service interface
-   * @returns The factory instance for the service
-   */
-  getFactory<T>(serviceKey: string): IServiceFactory<T> {
-    const factory = this.factories.get(serviceKey);
-    if (!factory) {
-      throw new Error(`Service ${serviceKey} is not registered. Make sure to register the service before using it.`);
-    }
-    return factory;
-  }
+type SingletonServicesType = {
+  [K in keyof typeof SingletonServices]: () => typeof SingletonServices[K];
+};
 
-  /**
-   * Checks if a service is registered.
-   * @param serviceKey - Unique key identifying the service interface
-   * @returns True if the service is registered, false otherwise
-   */
-  isRegistered(serviceKey: string): boolean {
-    return this.factories.has(serviceKey);
-  }
-}
+export const ServiceCollection = {
+  // Maps singletons to a function that returns the global instance
+  Singleton: Object.fromEntries(
+    Object.entries(SingletonServices).map(([key, service]) => [
+      key,
+      () => service,
+    ])
+  ) as SingletonServicesType,
+  // We register them as functions that return a new instance of the service
+  Transient: {
+    CountService: () => new CountService(),
+    PaymentService: () => new PaymentService(SingletonServices.CustomerService),
+  },
+};

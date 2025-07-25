@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useService } from '../di/useService';
-import { ICustomerService } from '../di/interfaces/ICustomerService';
 import { Customer } from '../types/CustomerTypes';
 import { AppConfig } from '../config/AppConfig';
+import { useService } from '../hooks/use-service';
 
 export const ApiDemoView: React.FC = () => {
-  const customerService = useService<ICustomerService>('ICustomerService');
+  const customerService = useService('CustomerService');
+  const paymentsService = useService("PaymentService");
+
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -122,6 +123,15 @@ export const ApiDemoView: React.FC = () => {
               </tbody>
             </table>
           </div>
+          <br />
+          <button
+            className="action-button"
+            onClick={() => {
+              paymentsService.processPayment();
+            }}
+          >
+            Make a Payment
+          </button>
         </div>
       )}
 

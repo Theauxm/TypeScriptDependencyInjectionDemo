@@ -31,5 +31,10 @@
   },
   "devDependencies": {
     "http-proxy-middleware": "^3.0.5"
+  },
+  "prettier": {
+    "singleQuote": false,
+    "singleAttributePerLine": true,
+    "bracketSameLine": false
   }
 }
