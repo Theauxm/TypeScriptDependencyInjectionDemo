@@ -5,7 +5,7 @@ import { Customer } from '../types/CustomerTypes';
 import { AppConfig } from '../config/AppConfig';
 
 export const ApiDemoView: React.FC = () => {
-  const customerService = useService<ICustomerService>('ICustomerService');
+  const customerService = useService('ICustomerService');
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);

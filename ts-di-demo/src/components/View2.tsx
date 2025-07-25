@@ -49,7 +49,7 @@ export const View2: React.FC = () => {
 };
 
 const ColorComponent: React.FC<{ viewName: string }> = ({ viewName }) => {
-  const colorService = useService<IColorService>('IColorService');
+  const colorService = useService('IColorService');
   const [currentColor, setCurrentColor] = useState(colorService.getRgbColor());
 
   useEffect(() => {

@@ -48,7 +48,7 @@ export const View3: React.FC = () => {
 };
 
 const CounterComponent: React.FC<{ viewName: string }> = ({ viewName }) => {
-  const countService = useService<ICountService>('ICountService');
+  const countService = useService('ICountService');
   const [currentCount, setCurrentCount] = useState(countService.getCount());
 
   useEffect(() => {
