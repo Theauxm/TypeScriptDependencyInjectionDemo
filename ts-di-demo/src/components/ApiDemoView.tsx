@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useService } from '../di/useService';
-import { ICustomerService } from '../di/interfaces/ICustomerService';
+// import { useService } from '../di/useService';
+// import { ICustomerService } from '../di/interfaces/ICustomerService';
 import { Customer } from '../types/CustomerTypes';
 import { AppConfig } from '../config/AppConfig';
+import { FakeCustomerService } from '../di/services/FakeCustomerService';
+import { RealCustomerService } from '../di/services/RealCustomerService';
+
+const customerService = AppConfig.USE_REAL_API ? new RealCustomerService() : new FakeCustomerService();
 
 export const ApiDemoView: React.FC = () => {
-  const customerService = useService<ICustomerService>('ICustomerService');
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
