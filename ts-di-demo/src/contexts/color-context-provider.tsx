@@ -17,8 +17,6 @@ const ColorContext = createContext<ColorContextState | null>(null);
 // to not create a new service instance every time this context renders
 // Instantiate the shared service
 const colorService = ServiceCollection.ColorServiceFactory.Create();
-// This works too, but it's not necessary
-// const colorService = new ColorServiceFactory().Create();
 
 export const ColorContextProvider: React.FC<{ children: ReactNode }> = (
   props

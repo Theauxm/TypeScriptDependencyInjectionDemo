@@ -51,8 +51,6 @@ export const View3: React.FC<{ viewTitle: string }> = ({
 const CounterComponent: React.FC<{ viewName: string }> = ({ viewName }) => {
   // useRef required to not re-create a service instance when this component re-renders
   const { current: countService } = React.useRef(ServiceCollection.CountServiceFactory.Create());
-  // This works too, but it's not necessary
-  // const { current: countService } = React.useRef(new CountServiceFactory().Create());
 
   const [currentCount, setCurrentCount] = useState(countService.getCount());
 
