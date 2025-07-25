@@ -3,9 +3,10 @@ import { Customer } from '../types/CustomerTypes';
 import { AppConfig } from '../config/AppConfig';
 import { ServiceCollection } from '../di/ServiceCollection';
 
-const customerService = ServiceCollection.CustomerServiceFactory.Create();
-
 export const ApiDemoView: React.FC = () => {
+  // useRef required to not re-create a service instance when this component re-renders
+  const { current: customerService } = React.useRef(ServiceCollection.CustomerServiceFactory.Create());
+
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
