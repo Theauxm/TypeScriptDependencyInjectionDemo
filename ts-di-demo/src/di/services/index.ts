@@ -7,3 +7,6 @@ import './CountService';
 import './FakeCustomerService';
 import './RealCustomerService';
 import './PaymentService';
+import './RealAxiosService';
+import './FakeAxiosService';
+import './NwycService';
