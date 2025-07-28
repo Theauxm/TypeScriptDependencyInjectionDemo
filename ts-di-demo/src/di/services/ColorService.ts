@@ -1,9 +1,11 @@
+import { Singleton } from '../decorators';
 import { IColorService } from '../interfaces/IColorService';
 
 /**
  * Concrete implementation of IColorService that manages RGB color state.
  * This service maintains a current color and notifies subscribers of changes.
  */
+@Singleton("ColorService")
 export class ColorService implements IColorService {
   private currentColor: { r: number; g: number; b: number };
   private subscribers: (() => void)[] = [];

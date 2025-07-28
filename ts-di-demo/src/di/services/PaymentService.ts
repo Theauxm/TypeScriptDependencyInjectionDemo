@@ -1,11 +1,14 @@
-import { ICustomerService } from "../interfaces/ICustomerService";
+import { Transient } from "../decorators";
+import type { ICustomerService } from "../interfaces/ICustomerService";
 import { IPaymentService } from "../interfaces/IPaymentService";
+import { serviceContainer } from "../ServiceContainer";
 
+@Transient("PaymentService")
 export class PaymentService implements IPaymentService {
   private customersService: ICustomerService;
 
-  constructor(customersService: ICustomerService) {
-    this.customersService = customersService;
+  constructor() {
+    this.customersService = serviceContainer.resolve("CustomerService");
   }
 
   async processPayment(): Promise<void> {
