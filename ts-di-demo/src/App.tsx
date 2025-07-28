@@ -5,15 +5,19 @@ import { ColorServiceFactory } from './di/factories/ColorServiceFactory';
 import { CountServiceFactory } from './di/factories/CountServiceFactory';
 import { RealCustomerServiceFactory } from './di/factories/RealCustomerServiceFactory';
 import { FakeCustomerServiceFactory } from './di/factories/FakeCustomerServiceFactory';
+import { RealAxiosServiceFactory } from './di/factories/RealAxiosServiceFactory';
+import { FakeAxiosServiceFactory } from './di/factories/FakeAxiosServiceFactory';
+import { NwycServiceFactory } from './di/factories/NwycServiceFactory';
 import { AppConfig } from './config/AppConfig';
 import { View1 } from './components/View1';
 import { View2 } from './components/View2';
 import { View3 } from './components/View3';
 import { View4 } from './components/View4';
 import { ApiDemoView } from './components/ApiDemoView';
+import { NwycServiceDemo } from './components/NwycServiceDemo';
 import './App.css';
 
-type DemoMode = 'di' | 'api';
+type DemoMode = 'di' | 'api' | 'nwyc';
 
 // Create and configure the service collection
 const createServiceCollection = (): ServiceCollection => {
@@ -32,6 +36,14 @@ const createServiceCollection = (): ServiceCollection => {
     services.register('ICustomerService', new FakeCustomerServiceFactory());
   }
   
+  // Register NWYC services - configuration-driven factory selection
+  const axiosServiceFactory = AppConfig.USE_REAL_API 
+    ? new RealAxiosServiceFactory() 
+    : new FakeAxiosServiceFactory();
+  
+  services.register('IAxiosService', axiosServiceFactory);
+  services.register('INwycService', new NwycServiceFactory(axiosServiceFactory));
+  
   return services;
 };
 
@@ -44,6 +56,14 @@ const App: React.FC = () => {
       return (
         <div className="single-view-container">
           <ApiDemoView />
+        </div>
+      );
+    }
+
+    if (demoMode === 'nwyc') {
+      return (
+        <div className="single-view-container">
+          <NwycServiceDemo />
         </div>
       );
     }
@@ -89,6 +109,31 @@ const App: React.FC = () => {
       );
     }
 
+    if (demoMode === 'nwyc') {
+      return (
+        <footer className="app-footer">
+          <div className="legend">
+            <h3>NWYC Service Demo Explanation:</h3>
+            <ul>
+              <li><strong>Complete API Wrapper:</strong> 47 endpoints covering authentication, content, topics, polls, alerts, campaigns, and publications</li>
+              <li><strong>Layered Architecture:</strong> IAxiosService (HTTP) → INwycService (Business Logic) with dependency injection</li>
+              <li><strong>Type Safety:</strong> Full TypeScript coverage with OpenAPI-generated types for all requests/responses</li>
+              <li><strong>Authentication:</strong> Token-based authentication with automatic header injection</li>
+              <li><strong>Error Handling:</strong> Comprehensive error management at service level with user-friendly messages</li>
+              <li><strong>Mock Support:</strong> Complete fake service implementation for testing and development</li>
+            </ul>
+            <h4>Key Features:</h4>
+            <ul>
+              <li><strong>47 API Endpoints:</strong> Authentication, content management, legislative data, alerts, campaigns</li>
+              <li><strong>Dependency Injection:</strong> Easy testing with real/fake service swapping via configuration</li>
+              <li><strong>Service Abstraction:</strong> Clean business logic layer over HTTP operations</li>
+              <li><strong>Configuration-Driven:</strong> Switch between real API and mock data via AppConfig.USE_REAL_API</li>
+            </ul>
+          </div>
+        </footer>
+      );
+    }
+
     return (
       <footer className="app-footer">
         <div className="legend">
@@ -127,6 +172,12 @@ const App: React.FC = () => {
             onClick={() => setDemoMode('api')}
           >
             🌐 API Integration Demo
+          </button>
+          <button
+            className={`demo-nav-button ${demoMode === 'nwyc' ? 'active' : ''}`}
+            onClick={() => setDemoMode('nwyc')}
+          >
+            🏛️ NWYC Service Demo
           </button>
         </nav>
         
