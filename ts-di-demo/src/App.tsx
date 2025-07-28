@@ -1,42 +1,13 @@
 import React, { useState } from 'react';
-import { ServiceProvider } from './di/ServiceProvider';
-import { ServiceCollection } from './di/ServiceCollection';
-import { ColorServiceFactory } from './di/factories/ColorServiceFactory';
-import { CountServiceFactory } from './di/factories/CountServiceFactory';
-import { RealCustomerServiceFactory } from './di/factories/RealCustomerServiceFactory';
-import { FakeCustomerServiceFactory } from './di/factories/FakeCustomerServiceFactory';
-import { AppConfig } from './config/AppConfig';
-import { View1 } from './components/View1';
-import { View2 } from './components/View2';
+import { ColorServiceConsumerView } from './components/View1';
 import { View3 } from './components/View3';
-import { View4 } from './components/View4';
 import { ApiDemoView } from './components/ApiDemoView';
 import './App.css';
+import { ColorContextProvider } from './contexts/color-context-provider';
 
 type DemoMode = 'di' | 'api';
 
-// Create and configure the service collection
-const createServiceCollection = (): ServiceCollection => {
-  const services = new ServiceCollection();
-  
-  // Register singleton ColorService
-  services.register('IColorService', new ColorServiceFactory());
-  
-  // Register scoped CountService
-  services.register('ICountService', new CountServiceFactory());
-  
-  // Register singleton CustomerService - configuration-driven factory selection
-  if (AppConfig.USE_REAL_API) {
-    services.register('ICustomerService', new RealCustomerServiceFactory());
-  } else {
-    services.register('ICustomerService', new FakeCustomerServiceFactory());
-  }
-  
-  return services;
-};
-
 const App: React.FC = () => {
-  const [services] = useState(() => createServiceCollection());
   const [demoMode, setDemoMode] = useState<DemoMode>('di');
 
   const renderContent = () => {
@@ -50,17 +21,19 @@ const App: React.FC = () => {
 
     return (
       <div className="views-grid">
+        <ColorContextProvider>
+          <div className="view-container">
+            <ColorServiceConsumerView viewTitle={'View 1'} />
+          </div>
+          <div className="view-container">
+            <ColorServiceConsumerView viewTitle={'View 2'} />
+          </div>
+        </ColorContextProvider>
         <div className="view-container">
-          <View1 />
+          <View3 viewTitle={'View3'} />
         </div>
         <div className="view-container">
-          <View2 />
-        </div>
-        <div className="view-container">
-          <View3 />
-        </div>
-        <div className="view-container">
-          <View4 />
+          <View3 viewTitle={'View4'} />
         </div>
       </div>
     );
@@ -108,7 +81,6 @@ const App: React.FC = () => {
   };
 
   return (
-    <ServiceProvider services={services}>
       <div className="app">
         <header className="app-header">
           <h1>TypeScript Dependency Injection Demo</h1>
@@ -136,7 +108,6 @@ const App: React.FC = () => {
         
         {renderFooter()}
       </div>
-    </ServiceProvider>
   );
 };
 

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useService } from '../di/useService';
-import { ICountService } from '../di/interfaces/ICountService';
+import { useService } from '../hooks/use-service';
 
-export const View3: React.FC = () => {
+export const View3: React.FC<{ viewTitle: string }> = ({
+  viewTitle,
+}) => {
   const [isMounted, setIsMounted] = useState(true);
   const [mountKey, setMountKey] = useState(0);
 
@@ -17,7 +18,7 @@ export const View3: React.FC = () => {
 
   return (
     <div className="view">
-      <h2>View 3 - Scoped Count Service</h2>
+      <h2>{viewTitle} - Scoped Count Service</h2>
       <div className="service-info">
         <p>This view uses a <strong>scoped</strong> ICountService instance.</p>
         <p>Each mount creates a new independent service instance.</p>
@@ -32,7 +33,7 @@ export const View3: React.FC = () => {
         </button>
       </div>
 
-      {isMounted && <CounterComponent key={mountKey} viewName="View 3" />}
+      {isMounted && <CounterComponent key={mountKey} viewName={viewTitle} />}
       
       <div className="technical-info">
         <h4>Technical Details:</h4>
@@ -40,7 +41,7 @@ export const View3: React.FC = () => {
           <li>Service retrieved via: <code>useService&lt;ICountService&gt;('ICountService')</code></li>
           <li>Factory type: <code>CountServiceFactory</code> (Scoped)</li>
           <li>New instance created on each component mount</li>
-          <li>Independent from View 4's counter instance</li>
+          <li>Independent from other instance's counter instance</li>
         </ul>
       </div>
     </div>
@@ -48,7 +49,8 @@ export const View3: React.FC = () => {
 };
 
 const CounterComponent: React.FC<{ viewName: string }> = ({ viewName }) => {
-  const countService = useService<ICountService>('ICountService');
+  const countService = useService('CountService');
+
   const [currentCount, setCurrentCount] = useState(countService.getCount());
 
   useEffect(() => {

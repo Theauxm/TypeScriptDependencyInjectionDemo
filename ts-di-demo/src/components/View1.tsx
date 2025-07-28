@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useService } from '../di/useService';
-import { IColorService } from '../di/interfaces/IColorService';
+import React, { useState, } from 'react';
+import { useColorContext } from '../contexts/color-context-provider';
 
-export const View1: React.FC = () => {
+export const ColorServiceConsumerView: React.FC<{ viewTitle: string }> = ({
+  viewTitle,
+}) => {
   const [isMounted, setIsMounted] = useState(true);
   const [mountKey, setMountKey] = useState(0);
 
@@ -17,10 +18,10 @@ export const View1: React.FC = () => {
 
   return (
     <div className="view">
-      <h2>View 1 - Singleton Color Service</h2>
+      <h2>{viewTitle} - Singleton Color Service</h2>
       <div className="service-info">
         <p>This view uses a <strong>singleton</strong> IColorService instance.</p>
-        <p>Changes made here will be reflected in View 2 as well.</p>
+        <p>Changes made here will be reflected in all instances.</p>
         <p><strong>Note:</strong> Unmounting and remounting preserves the singleton's state!</p>
       </div>
       
@@ -33,7 +34,7 @@ export const View1: React.FC = () => {
         </button>
       </div>
 
-      {isMounted && <ColorComponent key={mountKey} viewName="View 1" />}
+      {isMounted && <ColorComponent key={mountKey} viewName={viewTitle} />}
       
       <div className="technical-info">
         <h4>Technical Details:</h4>
@@ -49,35 +50,21 @@ export const View1: React.FC = () => {
 };
 
 const ColorComponent: React.FC<{ viewName: string }> = ({ viewName }) => {
-  const colorService = useService<IColorService>('IColorService');
-  const [currentColor, setCurrentColor] = useState(colorService.getRgbColor());
-
-  useEffect(() => {
-    // Subscribe to color changes
-    const unsubscribe = colorService.subscribe(() => {
-      setCurrentColor(colorService.getRgbColor());
-    });
-
-    return unsubscribe;
-  }, [colorService]);
-
-  const handleGenerateColor = () => {
-    colorService.generateNewColor();
-  };
+  const colorContext= useColorContext();
 
   return (
     <div className="color-demo">
       <div 
         className="color-box"
-        style={{ backgroundColor: currentColor }}
-        title={`Current color: ${currentColor}`}
+        style={{ backgroundColor: colorContext.color }}
+        title={`Current color: ${colorContext.color}`}
       >
-        <span className="color-text">{currentColor}</span>
+        <span className="color-text">{colorContext.color}</span>
       </div>
       
       <button 
         className="action-button"
-        onClick={handleGenerateColor}
+        onClick={colorContext.generateColor}
       >
         Generate New Color
       </button>
