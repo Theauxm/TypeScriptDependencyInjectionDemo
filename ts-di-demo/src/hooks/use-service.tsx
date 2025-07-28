@@ -1,20 +1,9 @@
 import { useRef } from "react";
-import { ServiceCollection } from "../di/ServiceCollection";
+import { serviceContainer } from "../di/ServiceContainer";
+import type { ServiceKey, ServiceMap } from "../di/types";
 
-type SingletonServicesKey = keyof (typeof ServiceCollection)["Singleton"];
-type TransientServicesKey = keyof (typeof ServiceCollection)["Transient"];
-type ServiceKey = SingletonServicesKey | TransientServicesKey;
-type Service<T extends ServiceKey> = T extends SingletonServicesKey
-  ? ReturnType<(typeof ServiceCollection)["Singleton"][T]>
-  : T extends TransientServicesKey
-  ? ReturnType<(typeof ServiceCollection)["Transient"][T]>
-  : never;
-
-export const getService = <T extends ServiceKey>(serviceKey: T) => {
-  if (Object.keys(ServiceCollection.Singleton).includes(serviceKey))
-    return ServiceCollection.Singleton[serviceKey as SingletonServicesKey]();
-  else return ServiceCollection.Transient[serviceKey as TransientServicesKey]();
-};
+export const getService = <T extends ServiceKey>(serviceKey: T) =>
+  serviceContainer.resolve(serviceKey);
 
 // Only usable within react components
 export const useService = <T extends ServiceKey>(serviceKey: T) => {
@@ -23,6 +12,9 @@ export const useService = <T extends ServiceKey>(serviceKey: T) => {
   // We call the returned service function that would:
   // a. return the global instance for singleton services
   // b. create a new instance for transient services
-  const serviceRef = useRef(getService(serviceKey));
-  return serviceRef.current as Service<T>;
+  const serviceRef = useRef<ServiceMap[T] | null>(null);
+  if (!serviceRef.current) {
+    serviceRef.current = serviceContainer.resolve(serviceKey);
+  }
+  return serviceRef.current;
 };

@@ -1,11 +1,13 @@
 import { ICustomerService } from '../interfaces/ICustomerService';
 import { CustomerDataResult, GraphQLRequest, GraphQLResponse, GetCustomersResponse } from '../../types/CustomerTypes';
 import { AppConfig } from '../../config/AppConfig';
+import { Singleton } from '../decorators';
 
 /**
  * Real implementation of ICustomerService that makes actual HTTP requests to the GraphQL API.
  * Handles network errors, HTTP errors, and GraphQL errors at the service level.
  */
+@Singleton("CustomerService", AppConfig.USE_REAL_API)
 export class RealCustomerService implements ICustomerService {
   private readonly graphqlQuery = `
     query GetDncEntitiesForCache {
