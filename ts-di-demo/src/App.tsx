@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { ColorServiceConsumerView } from './components/View1';
 import { View3 } from './components/View3';
 import { ApiDemoView } from './components/ApiDemoView';
+import { NwycDemoView } from './components/NwycDemoView';
+import { SemanticServicesDemo } from './components/SemanticServicesDemo';
 import './App.css';
 import { ColorContextProvider } from './contexts/color-context-provider';
 
-type DemoMode = 'di' | 'api';
+type DemoMode = 'di' | 'api' | 'nwyc' | 'semantic';
 
 const App: React.FC = () => {
   const [demoMode, setDemoMode] = useState<DemoMode>('di');
@@ -15,6 +17,22 @@ const App: React.FC = () => {
       return (
         <div className="single-view-container">
           <ApiDemoView />
+        </div>
+      );
+    }
+
+    if (demoMode === 'nwyc') {
+      return (
+        <div className="single-view-container">
+          <NwycDemoView />
+        </div>
+      );
+    }
+
+    if (demoMode === 'semantic') {
+      return (
+        <div className="single-view-container">
+          <SemanticServicesDemo />
         </div>
       );
     }
@@ -62,6 +80,54 @@ const App: React.FC = () => {
       );
     }
 
+    if (demoMode === 'nwyc') {
+      return (
+        <footer className="app-footer">
+          <div className="legend">
+            <h3>NWYC API Demo Explanation:</h3>
+            <ul>
+              <li><strong>Complete API Wrapper:</strong> Full implementation of all 44 NWYC API endpoints with TypeScript types</li>
+              <li><strong>Layered Architecture:</strong> NwycService → IAxiosService → Real/Fake HTTP implementations</li>
+              <li><strong>TanStack Query Integration:</strong> Built-in caching, loading states, and error handling</li>
+              <li><strong>Dependency Injection:</strong> HTTP layer is abstracted and mockable for testing</li>
+            </ul>
+            <h4>Architecture Benefits:</h4>
+            <ul>
+              <li><strong>HTTP Abstraction:</strong> Real vs Mock HTTP calls determined by configuration</li>
+              <li><strong>Type Safety:</strong> Complete TypeScript coverage for all request/response types</li>
+              <li><strong>Error Handling:</strong> Consistent ServiceResult pattern across all endpoints</li>
+              <li><strong>Testability:</strong> Easy to test with fake HTTP responses</li>
+              <li><strong>Maintainability:</strong> Clean separation between business logic and HTTP concerns</li>
+            </ul>
+          </div>
+        </footer>
+      );
+    }
+
+    if (demoMode === 'semantic') {
+      return (
+        <footer className="app-footer">
+          <div className="legend">
+            <h3>Semantic Services Layer Explanation:</h3>
+            <ul>
+              <li><strong>API Agnostic Abstraction:</strong> Domain-focused services that hide NWYC API complexity</li>
+              <li><strong>Feature-Focused Design:</strong> AuthenticationService manages complete auth lifecycle with token handling</li>
+              <li><strong>Domain-Driven Services:</strong> UserService, ContentService, etc. organized by business domain</li>
+              <li><strong>Stateful Management:</strong> Services maintain internal state (tokens, user data) automatically</li>
+            </ul>
+            <h4>Architecture Benefits:</h4>
+            <ul>
+              <li><strong>Clean APIs:</strong> Simple method calls hide multi-step API operations</li>
+              <li><strong>Composability:</strong> Services work together seamlessly (UserService uses AuthenticationService)</li>
+              <li><strong>Maintainability:</strong> Business logic separated from API implementation details</li>
+              <li><strong>Testability:</strong> Easy to mock domain services for unit testing</li>
+              <li><strong>Developer Experience:</strong> Intuitive, business-focused method names and operations</li>
+            </ul>
+          </div>
+        </footer>
+      );
+    }
+
     return (
       <footer className="app-footer">
         <div className="legend">
@@ -99,6 +165,18 @@ const App: React.FC = () => {
             onClick={() => setDemoMode('api')}
           >
             🌐 API Integration Demo
+          </button>
+          <button
+            className={`demo-nav-button ${demoMode === 'nwyc' ? 'active' : ''}`}
+            onClick={() => setDemoMode('nwyc')}
+          >
+            🏛️ NWYC API Demo
+          </button>
+          <button
+            className={`demo-nav-button ${demoMode === 'semantic' ? 'active' : ''}`}
+            onClick={() => setDemoMode('semantic')}
+          >
+            🧩 Semantic Services Demo
           </button>
         </nav>
         
