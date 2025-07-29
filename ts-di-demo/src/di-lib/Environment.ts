@@ -4,7 +4,8 @@
 
 export enum Environment {
   Local = "Local",
-  Development = "Development", 
+  Development = "Development",
+  Test = "Test",
   Production = "Production"
 }
 
@@ -17,31 +18,37 @@ export const DEFAULT_SERVICE_PROFILE = {
   CustomerService: {
     [Environment.Local]: "FakeCustomerService",
     [Environment.Development]: "FakeCustomerService",
+    [Environment.Test]: "FakeCustomerService",
     [Environment.Production]: "RealCustomerService"
   },
   AxiosService: {
     [Environment.Local]: "FakeAxiosService",
     [Environment.Development]: "FakeAxiosService",
+    [Environment.Test]: "FakeAxiosService",
     [Environment.Production]: "RealAxiosService"
   },
   ColorService: {
     [Environment.Local]: "ColorService",
     [Environment.Development]: "ColorService",
+    [Environment.Test]: "ColorService",
     [Environment.Production]: "ColorService"
   },
   CountService: {
     [Environment.Local]: "CountService",
     [Environment.Development]: "CountService",
+    [Environment.Test]: "CountService",
     [Environment.Production]: "CountService"
   },
   PaymentService: {
     [Environment.Local]: "PaymentService",
     [Environment.Development]: "PaymentService",
+    [Environment.Test]: "PaymentService",
     [Environment.Production]: "PaymentService"
   },
   NwycService: {
     [Environment.Local]: "NwycService",
     [Environment.Development]: "NwycService",
+    [Environment.Test]: "NwycService",
     [Environment.Production]: "NwycService"
   },
   
@@ -49,11 +56,13 @@ export const DEFAULT_SERVICE_PROFILE = {
   StorageService: {
     [Environment.Local]: "MemoryStorageService",
     [Environment.Development]: "MemoryStorageService",
+    [Environment.Test]: "MemoryStorageService",
     [Environment.Production]: "MemoryStorageService"
   },
   AuthenticationService: {
     [Environment.Local]: "AuthenticationService",
     [Environment.Development]: "AuthenticationService",
+    [Environment.Test]: "AuthenticationService",
     [Environment.Production]: "AuthenticationService"
   }
 } as const;
