@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Customer } from '../types/CustomerTypes';
 import { AppConfig } from '../config/AppConfig';
+import { Environment } from '../di-lib/Environment';
 import { useService } from '../hooks/use-service';
 
 export const ApiDemoView: React.FC = () => {
@@ -47,12 +48,15 @@ export const ApiDemoView: React.FC = () => {
         <p>This demo showcases <strong>interface-based dependency injection</strong> with real vs mock implementations.</p>
         <p>
           <strong>Current Implementation:</strong> {' '}
-          <span className={`implementation-badge ${AppConfig.USE_REAL_API ? 'real' : 'fake'}`}>
-            {AppConfig.USE_REAL_API ? '🌐 Real API Service' : '🎭 Fake Mock Service'}
+          <span className={`implementation-badge ${AppConfig.ENVIRONMENT === Environment.Production ? 'real' : 'fake'}`}>
+            {AppConfig.ENVIRONMENT === Environment.Production ? '🌐 Real API Service' : '🔧 Fake Mock Service'}
           </span>
         </p>
         <p>
-          <em>Change the <code>USE_REAL_API</code> setting in AppConfig.ts and restart to switch implementations.</em>
+          <strong>Current Environment:</strong> <code>{AppConfig.ENVIRONMENT}</code>
+        </p>
+        <p>
+          <em>Change the <code>CURRENT_ENVIRONMENT</code> setting in Environment.ts and restart to switch implementations.</em>
         </p>
       </div>
 
@@ -145,9 +149,9 @@ export const ApiDemoView: React.FC = () => {
       <div className="technical-info">
         <h4>Technical Details:</h4>
         <ul>
-          <li>Service retrieved via: <code>useService&lt;ICustomerService&gt;('ICustomerService')</code></li>
-          <li>Factory type: <code>{AppConfig.USE_REAL_API ? 'RealCustomerServiceFactory' : 'FakeCustomerServiceFactory'}</code> (Singleton)</li>
-          <li>Implementation: <code>{AppConfig.USE_REAL_API ? 'RealCustomerService' : 'FakeCustomerService'}</code></li>
+          <li>Service retrieved via: <code>useService&lt;ICustomerService&gt;('CustomerService')</code></li>
+          <li>Environment: <code>{AppConfig.ENVIRONMENT}</code></li>
+          <li>Implementation: <code>{AppConfig.ENVIRONMENT === Environment.Production ? 'RealCustomerService' : 'FakeCustomerService'}</code> (Singleton)</li>
           <li>Error handling: Service-level error management with user-friendly messages</li>
           <li>Loading states: Async operation feedback with loading indicators</li>
         </ul>

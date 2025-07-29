@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useService } from '../hooks/use-service';
-import { IAuthenticationService } from '../di/interfaces/IAuthenticationService';
-import { IUserService } from '../di/interfaces/IUserService';
-import { IContentService } from '../di/interfaces/IContentService';
+import { IAuthenticationService } from '../services/AuthenticationService/IAuthenticationService';
+import { IUserService } from '../services/interfaces/IUserService';
+import { IContentService } from '../services/interfaces/IContentService';
 import { UserProfile } from '../types/NwycTypes';
 
 /**

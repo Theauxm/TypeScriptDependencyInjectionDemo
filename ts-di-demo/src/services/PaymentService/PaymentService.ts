@@ -1,9 +1,9 @@
-import { Transient } from "../decorators";
-import type { ICustomerService } from "../interfaces/ICustomerService";
-import { IPaymentService } from "../interfaces/IPaymentService";
-import { serviceContainer } from "../ServiceContainer";
+import { Injectable } from '../../di-lib/decorators';
+import type { ICustomerService } from '../CustomerService/ICustomerService';
+import { IPaymentService } from './IPaymentService';
+import { serviceContainer } from '../../di-lib/ServiceContainer';
 
-@Transient("PaymentService")
+@Injectable("PaymentService")
 export class PaymentService implements IPaymentService {
   private customersService: ICustomerService;
 

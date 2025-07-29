@@ -1,7 +1,6 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Singleton } from '../decorators';
-import { IAxiosService } from '../interfaces/IAxiosService';
-import { AppConfig } from '../../config/AppConfig';
+import { Injectable } from '../../di-lib/decorators';
+import { IAxiosService } from './IAxiosService';
 import {
   LoginResponse,
   AuthenticateResponse,
@@ -41,8 +40,9 @@ import {
  * Fake implementation of IAxiosService that returns mock data for all NWYC API endpoints.
  * Useful for testing, development, and demonstrating the service architecture.
  * Simulates network delay and provides realistic mock responses.
+ * Active in Local and Development environments.
  */
-@Singleton("AxiosService", !AppConfig.USE_REAL_NWYC_API)
+@Injectable("AxiosService")
 export class FakeAxiosService implements IAxiosService {
   
   async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {

@@ -1,12 +1,12 @@
-import { Singleton } from '../decorators';
-import { IStorageService } from '../interfaces/IStorageService';
+import { Injectable } from '../../di-lib/decorators';
+import { IStorageService } from './IStorageService';
 
 /**
  * Generic singleton memory-based storage service.
  * Stores any type of data in memory for the duration of the application session.
  * Provides a key-value store abstraction that can be used by other services.
  */
-@Singleton("StorageService")
+@Injectable("StorageService")
 export class MemoryStorageService implements IStorageService {
   private storage: Map<string, any> = new Map();
 

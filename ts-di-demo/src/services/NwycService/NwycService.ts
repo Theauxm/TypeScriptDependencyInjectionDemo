@@ -1,7 +1,7 @@
-import { Singleton } from '../decorators';
-import { INwycService } from '../interfaces/INwycService';
-import { IAxiosService } from '../interfaces/IAxiosService';
-import { serviceContainer } from '../ServiceContainer';
+import { Injectable } from '../../di-lib/decorators';
+import { INwycService } from './INwycService';
+import { IAxiosService } from '../AxiosService/IAxiosService';
+import { serviceContainer } from '../../di-lib/ServiceContainer';
 import { useQuery, useMutation, UseQueryResult, UseMutationResult } from '@tanstack/react-query';
 import { HttpMethod, RequestOptions } from '../../types/HttpTypes';
 import {
@@ -50,8 +50,9 @@ import {
  * NWYC API service implementation that uses the injected IAxiosService for HTTP operations.
  * Integrates with TanStack Query for caching and state management.
  * All methods return ServiceResult<T> for consistent error handling.
+ * Active in all environments.
  */
-@Singleton("NwycService")
+@Injectable("NwycService")
 export class NwycService implements INwycService {
   private axiosService: IAxiosService;
 
@@ -799,7 +800,7 @@ export class NwycService implements INwycService {
   // Private Helper Methods
   // ============================================================================
 
-  private handleError(error: any): string {
+  private handleError(error: unknown): string {
     if (error instanceof Error) {
       return error.message;
     }

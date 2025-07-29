@@ -1,8 +1,8 @@
-import { Singleton } from '../decorators';
-import { IAuthenticationService } from '../interfaces/IAuthenticationService';
-import { INwycService } from '../interfaces/INwycService';
-import { IStorageService } from '../interfaces/IStorageService';
-import { serviceContainer } from '../ServiceContainer';
+import { Injectable } from '../../di-lib/decorators';
+import { IAuthenticationService } from './IAuthenticationService';
+import { INwycService } from '../NwycService/INwycService';
+import { IStorageService } from '../StorageService/IStorageService';
+import { serviceContainer } from '../../di-lib/ServiceContainer';
 import { UserProfile, LoginRequest } from '../../types/NwycTypes';
 
 /**
@@ -10,7 +10,7 @@ import { UserProfile, LoginRequest } from '../../types/NwycTypes';
  * Manages complete authentication lifecycle including token management.
  * Abstracts away the complexity of multi-step authentication flows.
  */
-@Singleton("AuthenticationService")
+@Injectable("AuthenticationService")
 export class AuthenticationService implements IAuthenticationService {
   private nwycService: INwycService;
   private storageService: IStorageService;
