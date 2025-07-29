@@ -1,9 +1,11 @@
+import { Transient } from '../decorators';
 import { ICountService } from '../interfaces/ICountService';
 
 /**
  * Concrete implementation of ICountService that manages counter state.
  * This service maintains a count value and notifies subscribers of changes.
  */
+@Transient("CountService")
 export class CountService implements ICountService {
   private count: number = 0;
   private subscribers: (() => void)[] = [];

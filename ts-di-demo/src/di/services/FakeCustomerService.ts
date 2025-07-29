@@ -1,11 +1,14 @@
 import { ICustomerService } from '../interfaces/ICustomerService';
 import { CustomerDataResult, Customer } from '../../types/CustomerTypes';
+import { Singleton } from '../decorators';
+import { AppConfig } from '../../config/AppConfig';
 
 /**
  * Fake implementation of ICustomerService that returns hardcoded mock data.
  * Useful for testing, development, and demonstrating dependency injection patterns.
  * Simulates network delay to mimic real API behavior.
  */
+@Singleton("CustomerService", !AppConfig.USE_REAL_API)
 export class FakeCustomerService implements ICustomerService {
   private readonly mockCustomers: Customer[] = [
     {
