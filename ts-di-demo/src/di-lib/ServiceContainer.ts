@@ -1,5 +1,5 @@
-import type { ServiceKey, ServiceMap } from "./types";
-import { Environment, CURRENT_ENVIRONMENT, getExpectedImplementation, isServiceEnabledForEnvironment, type ServiceProfile } from "./Environment";
+import type { ServiceKey, ServiceMap, DIConfiguration } from "./types";
+import { isServiceEnabledForEnvironment, getExpectedImplementation } from "./Environment";
 
 type ServiceFactory<T> = () => T;
 
@@ -10,16 +10,32 @@ interface ServiceMetadata<T> {
   implementationName: string;
 }
 
-class ServiceContainer {
-  private registry = new Map<ServiceKey, ServiceMetadata<any>>();
-  private registrationAttempts = new Map<ServiceKey, string[]>();
+class ServiceContainer<
+  TServiceMap extends Record<string, any> = ServiceMap,
+  TServiceKeys extends string = keyof TServiceMap & string,
+  TEnvironments extends string = string
+> {
+  private registry = new Map<keyof TServiceMap, ServiceMetadata<any>>();
+  private registrationAttempts = new Map<keyof TServiceMap, string[]>();
+  private configuration?: DIConfiguration<TServiceKeys, TEnvironments>;
 
-  register<K extends ServiceKey>(
+  /**
+   * Initialize the container with configuration
+   */
+  initialize(configuration: DIConfiguration<TServiceKeys, TEnvironments>) {
+    this.configuration = configuration;
+  }
+
+  register<K extends keyof TServiceMap>(
     key: K,
-    factory: ServiceFactory<ServiceMap[K]>,
+    factory: ServiceFactory<TServiceMap[K]>,
     singleton: boolean,
     implementationName: string
   ) {
+    if (!this.configuration) {
+      throw new Error('ServiceContainer must be initialized with configuration before registering services');
+    }
+
     // Track all registration attempts for debugging
     if (!this.registrationAttempts.has(key)) {
       this.registrationAttempts.set(key, []);
@@ -27,9 +43,13 @@ class ServiceContainer {
     this.registrationAttempts.get(key)!.push(implementationName);
 
     // Check if this service should be registered in the current environment
-    // using the Environment.ts configuration
-    if (!isServiceEnabledForEnvironment(key as keyof ServiceProfile, implementationName, CURRENT_ENVIRONMENT)) {
-      console.log(`[ServiceContainer] Skipping registration of ${implementationName} for ${key} - not enabled in ${CURRENT_ENVIRONMENT} environment`);
+    if (!isServiceEnabledForEnvironment(
+      String(key) as TServiceKeys,
+      implementationName,
+      this.configuration.environmentConfig,
+      this.configuration.currentEnvironment
+    )) {
+      console.log(`[ServiceContainer] Skipping registration of ${implementationName} for ${String(key)} - not enabled in ${this.configuration.currentEnvironment} environment`);
       return;
     }
 
@@ -37,20 +57,24 @@ class ServiceContainer {
     if (this.registry.has(key)) {
       const existing = this.registry.get(key)!;
       const allAttempts = this.registrationAttempts.get(key) || [];
-      const expectedImpl = getExpectedImplementation(key as keyof ServiceProfile);
+      const expectedImpl = getExpectedImplementation(
+        String(key) as TServiceKeys,
+        this.configuration.environmentConfig,
+        this.configuration.currentEnvironment
+      );
       
       throw new Error(
-        `Service conflict detected for '${key}'!\n` +
+        `Service conflict detected for '${String(key)}'!\n` +
         `Attempting to register: ${implementationName}\n` +
         `Already registered: ${existing.implementationName}\n` +
         `All registration attempts: ${allAttempts.join(', ')}\n` +
-        `Current environment: ${CURRENT_ENVIRONMENT}\n` +
+        `Current environment: ${this.configuration.currentEnvironment}\n` +
         `Expected implementation: ${expectedImpl || 'Not defined'}\n` +
         `\nOnly one implementation per service should be active in each environment.`
       );
     }
 
-    console.log(`[ServiceContainer] Registering ${implementationName} for ${key} in ${CURRENT_ENVIRONMENT} environment`);
+    console.log(`[ServiceContainer] Registering ${implementationName} for ${String(key)} in ${this.configuration.currentEnvironment} environment`);
     this.registry.set(key, { 
       factory, 
       singleton, 
@@ -58,14 +82,22 @@ class ServiceContainer {
     });
   }
 
-  resolve<K extends ServiceKey>(key: K): ServiceMap[K] {
+  resolve<K extends keyof TServiceMap>(key: K): TServiceMap[K] {
+    if (!this.configuration) {
+      throw new Error('ServiceContainer must be initialized with configuration before resolving services');
+    }
+
     const meta = this.registry.get(key);
     if (!meta) {
       const attempts = this.registrationAttempts.get(key) || [];
-      const expected = getExpectedImplementation(key as keyof ServiceProfile);
+      const expected = getExpectedImplementation(
+        String(key) as TServiceKeys,
+        this.configuration.environmentConfig,
+        this.configuration.currentEnvironment
+      );
       
       throw new Error(
-        `Service '${key}' not registered for environment '${CURRENT_ENVIRONMENT}'!\n` +
+        `Service '${String(key)}' not registered for environment '${this.configuration.currentEnvironment}'!\n` +
         `Registration attempts: ${attempts.length > 0 ? attempts.join(', ') : 'None'}\n` +
         `Expected implementation: ${expected || 'Not defined'}\n` +
         `Make sure the correct service implementation is decorated for the current environment.`
@@ -74,21 +106,21 @@ class ServiceContainer {
     
     if (meta.singleton) {
       if (!meta.instance) {
-        console.log(`[ServiceContainer] Creating singleton instance of ${meta.implementationName} for ${key}`);
+        console.log(`[ServiceContainer] Creating singleton instance of ${meta.implementationName} for ${String(key)}`);
         meta.instance = meta.factory();
       }
       return meta.instance;
     }
     
-    console.log(`[ServiceContainer] Creating transient instance of ${meta.implementationName} for ${key}`);
+    console.log(`[ServiceContainer] Creating transient instance of ${meta.implementationName} for ${String(key)}`);
     return meta.factory();
   }
 
   /**
    * Get information about registered services for debugging
    */
-  getRegistrationInfo(): Record<ServiceKey, { implementation: string; singleton: boolean }> {
-    const info: Record<ServiceKey, { implementation: string; singleton: boolean }> = {} as Record<ServiceKey, { implementation: string; singleton: boolean }>;
+  getRegistrationInfo(): Record<keyof TServiceMap, { implementation: string; singleton: boolean }> {
+    const info: Record<keyof TServiceMap, { implementation: string; singleton: boolean }> = {} as Record<keyof TServiceMap, { implementation: string; singleton: boolean }>;
     this.registry.forEach((meta, key) => {
       info[key] = {
         implementation: meta.implementationName,
@@ -101,8 +133,8 @@ class ServiceContainer {
   /**
    * Get all registration attempts for debugging
    */
-  getRegistrationAttempts(): Record<ServiceKey, string[]> {
-    const attempts: Record<ServiceKey, string[]> = {} as Record<ServiceKey, string[]>;
+  getRegistrationAttempts(): Record<keyof TServiceMap, string[]> {
+    const attempts: Record<keyof TServiceMap, string[]> = {} as Record<keyof TServiceMap, string[]>;
     this.registrationAttempts.forEach((implementations, key) => {
       attempts[key] = implementations;
     });
@@ -110,4 +142,5 @@ class ServiceContainer {
   }
 }
 
-export const serviceContainer = new ServiceContainer();
+export { ServiceContainer };
+export const serviceContainer = new ServiceContainer<ServiceMap>();

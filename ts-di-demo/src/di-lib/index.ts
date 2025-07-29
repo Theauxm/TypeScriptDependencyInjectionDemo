@@ -4,10 +4,15 @@
  * without being tied to any specific service implementations
  */
 
-export { serviceContainer } from './ServiceContainer';
+export { ServiceContainer, serviceContainer } from './ServiceContainer';
 export { Injectable } from './decorators';
-export { Environment, CURRENT_ENVIRONMENT, DEFAULT_SERVICE_PROFILE, isServiceEnabledForEnvironment, getExpectedImplementation } from './Environment';
-export { ServiceLifecycle, DEFAULT_LIFECYCLE_PROFILE, isServiceSingleton, getServiceLifecycle } from './ServiceLifecycle';
-export type { ServiceKey, ServiceMap, ServiceInterfaceMap } from './types';
-export type { ServiceProfile } from './Environment';
-export type { ServiceLifecycleProfile } from './ServiceLifecycle';
+export { Environment, isServiceEnabledForEnvironment, getExpectedImplementation } from './Environment';
+export { ServiceLifecycle, isServiceSingleton, getServiceLifecycle } from './ServiceLifecycle';
+export type { 
+  ServiceKey, 
+  ServiceMap, 
+  ServiceInterfaceMap, 
+  ServiceLifecycleConfig, 
+  ServiceEnvironmentConfig, 
+  DIConfiguration 
+} from './types';

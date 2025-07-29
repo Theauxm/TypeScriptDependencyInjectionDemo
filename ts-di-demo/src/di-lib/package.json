@@ -1,0 +1,50 @@
+{
+  "name": "@nwyc/di",
+  "version": "0.0.1",
+  "description": "TypeScript Dependency Injection Library - Generic DI container with environment and lifecycle management",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.lib.json",
+    "build:watch": "tsc -p tsconfig.lib.json --watch",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "typescript",
+    "dependency-injection",
+    "di",
+    "ioc",
+    "container",
+    "service-locator"
+  ],
+  "author": "NWYC",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  },
+  "peerDependencies": {
+    "typescript": ">=4.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Theauxm/TypeScriptDependencyInjectionDemo.git",
+    "directory": "ts-di-demo/src/di-lib"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  }
+}
