@@ -4,10 +4,11 @@ import { View3 } from './components/View3';
 import { ApiDemoView } from './components/ApiDemoView';
 import { NwycDemoView } from './components/NwycDemoView';
 import { SemanticServicesDemo } from './components/SemanticServicesDemo';
+import { ConfigurationDemo } from './components/ConfigurationDemo';
 import './App.css';
 import { ColorContextProvider } from './contexts/color-context-provider';
 
-type DemoMode = 'di' | 'api' | 'nwyc' | 'semantic';
+type DemoMode = 'di' | 'api' | 'nwyc' | 'semantic' | 'config';
 
 const App: React.FC = () => {
   const [demoMode, setDemoMode] = useState<DemoMode>('di');
@@ -33,6 +34,14 @@ const App: React.FC = () => {
       return (
         <div className="single-view-container">
           <SemanticServicesDemo />
+        </div>
+      );
+    }
+
+    if (demoMode === 'config') {
+      return (
+        <div className="single-view-container">
+          <ConfigurationDemo />
         </div>
       );
     }
@@ -128,6 +137,30 @@ const App: React.FC = () => {
       );
     }
 
+    if (demoMode === 'config') {
+      return (
+        <footer className="app-footer">
+          <div className="legend">
+            <h3>Environment-Based Configuration Explanation:</h3>
+            <ul>
+              <li><strong>Environment-Specific Values:</strong> Different configuration values for Local, Development, and Production environments</li>
+              <li><strong>Centralized Management:</strong> All configuration in one place with clear environment differences</li>
+              <li><strong>Type Safety:</strong> Compile-time validation ensures all environments have consistent structure</li>
+              <li><strong>Easy Environment Switching:</strong> Change environments by updating one constant in Environment.ts</li>
+            </ul>
+            <h4>Key Benefits:</h4>
+            <ul>
+              <li><strong>Consistency:</strong> Matches existing service profile pattern for familiar developer experience</li>
+              <li><strong>Maintainability:</strong> Adding new configuration values requires updating all environments</li>
+              <li><strong>Debugging:</strong> Utility functions help validate and inspect configuration across environments</li>
+              <li><strong>Integration:</strong> Works seamlessly with dependency injection system and services</li>
+              <li><strong>Scalability:</strong> Easy to add new environments or configuration values as needed</li>
+            </ul>
+          </div>
+        </footer>
+      );
+    }
+
     return (
       <footer className="app-footer">
         <div className="legend">
@@ -177,6 +210,12 @@ const App: React.FC = () => {
             onClick={() => setDemoMode('semantic')}
           >
             🧩 Semantic Services Demo
+          </button>
+          <button
+            className={`demo-nav-button ${demoMode === 'config' ? 'active' : ''}`}
+            onClick={() => setDemoMode('config')}
+          >
+            ⚙️ Environment Config Demo
           </button>
         </nav>
         
