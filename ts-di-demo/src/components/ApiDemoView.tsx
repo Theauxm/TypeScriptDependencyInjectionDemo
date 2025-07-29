@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Customer } from '../types/CustomerTypes';
 import { AppConfig } from '../config/AppConfig';
-import { Environment } from '../di/Environment';
+import { Environment } from '../di-lib/Environment';
 import { useService } from '../hooks/use-service';
 
 export const ApiDemoView: React.FC = () => {

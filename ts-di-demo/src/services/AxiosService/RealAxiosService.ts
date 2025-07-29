@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
-import { Injectable } from '../decorators';
-import { IAxiosService } from '../interfaces/IAxiosService';
+import { Injectable } from '../../di-lib/decorators';
+import { IAxiosService } from './IAxiosService';
 import { AppConfig } from '../../config/AppConfig';
 
 /**

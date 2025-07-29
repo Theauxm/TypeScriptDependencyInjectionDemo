@@ -1,8 +1,8 @@
-import { Injectable } from '../decorators';
-import { IAuthenticationService } from '../interfaces/IAuthenticationService';
-import { INwycService } from '../interfaces/INwycService';
-import { IStorageService } from '../interfaces/IStorageService';
-import { serviceContainer } from '../ServiceContainer';
+import { Injectable } from '../../di-lib/decorators';
+import { IAuthenticationService } from './IAuthenticationService';
+import { INwycService } from '../NwycService/INwycService';
+import { IStorageService } from '../StorageService/IStorageService';
+import { serviceContainer } from '../../di-lib/ServiceContainer';
 import { UserProfile, LoginRequest } from '../../types/NwycTypes';
 
 /**

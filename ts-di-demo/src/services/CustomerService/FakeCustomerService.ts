@@ -1,6 +1,6 @@
-import { ICustomerService } from '../interfaces/ICustomerService';
+import { ICustomerService } from './ICustomerService';
 import { CustomerDataResult, Customer } from '../../types/CustomerTypes';
-import { Injectable } from '../decorators';
+import { Injectable } from '../../di-lib/decorators';
 
 /**
  * Fake implementation of ICustomerService that returns hardcoded mock data.

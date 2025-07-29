@@ -1,4 +1,4 @@
-import { Environment, CURRENT_ENVIRONMENT } from '../di/Environment';
+import { Environment, CURRENT_ENVIRONMENT } from '../di-lib/Environment';
 
 /**
  * Application configuration settings

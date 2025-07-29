@@ -1,7 +1,7 @@
-import { Injectable } from '../decorators';
-import { INwycService } from '../interfaces/INwycService';
-import { IAxiosService } from '../interfaces/IAxiosService';
-import { serviceContainer } from '../ServiceContainer';
+import { Injectable } from '../../di-lib/decorators';
+import { INwycService } from './INwycService';
+import { IAxiosService } from '../AxiosService/IAxiosService';
+import { serviceContainer } from '../../di-lib/ServiceContainer';
 import { useQuery, useMutation, UseQueryResult, UseMutationResult } from '@tanstack/react-query';
 import { HttpMethod, RequestOptions } from '../../types/HttpTypes';
 import {

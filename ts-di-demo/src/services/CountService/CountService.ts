@@ -1,5 +1,5 @@
-import { Injectable } from '../decorators';
-import { ICountService } from '../interfaces/ICountService';
+import { Injectable } from '../../di-lib/decorators';
+import { ICountService } from './ICountService';
 
 /**
  * Concrete implementation of ICountService that manages counter state.

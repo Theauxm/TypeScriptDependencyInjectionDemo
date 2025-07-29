@@ -1,5 +1,5 @@
-import { Injectable } from '../decorators';
-import { IStorageService } from '../interfaces/IStorageService';
+import { Injectable } from '../../di-lib/decorators';
+import { IStorageService } from './IStorageService';
 
 /**
  * Generic singleton memory-based storage service.

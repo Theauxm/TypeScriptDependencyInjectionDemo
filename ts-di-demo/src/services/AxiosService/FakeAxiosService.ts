@@ -1,6 +1,6 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Injectable } from '../decorators';
-import { IAxiosService } from '../interfaces/IAxiosService';
+import { Injectable } from '../../di-lib/decorators';
+import { IAxiosService } from './IAxiosService';
 import {
   LoginResponse,
   AuthenticateResponse,

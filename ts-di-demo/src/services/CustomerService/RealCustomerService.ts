@@ -1,7 +1,7 @@
-import { ICustomerService } from '../interfaces/ICustomerService';
+import { ICustomerService } from './ICustomerService';
 import { CustomerDataResult, GraphQLRequest, GraphQLResponse, GetCustomersResponse } from '../../types/CustomerTypes';
 import { AppConfig } from '../../config/AppConfig';
-import { Injectable } from '../decorators';
+import { Injectable } from '../../di-lib/decorators';
 
 /**
  * Real implementation of ICustomerService that makes actual HTTP requests to the GraphQL API.

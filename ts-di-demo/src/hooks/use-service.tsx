@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { serviceContainer } from "../di/ServiceContainer";
-import type { ServiceKey, ServiceMap, ServiceInterfaceMap } from "../di/types";
+import { serviceContainer } from "../di-lib/ServiceContainer";
+import type { ServiceKey, ServiceMap, ServiceInterfaceMap } from "../di-lib/types";
 
 export const getService = <T extends ServiceKey>(serviceKey: T): ServiceInterfaceMap[T] => {
   // Get the concrete implementation from the container
