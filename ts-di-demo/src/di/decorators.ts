@@ -1,26 +1,16 @@
 import { serviceContainer } from "./ServiceContainer";
 import { ServiceMap } from "./types";
+import { isServiceSingleton } from "./ServiceLifecycle";
 
 /**
- * Singleton decorator that registers a service as a singleton
- * Environment configuration is determined by the Environment.ts file
+ * Injectable decorator that registers a service with the container
+ * Both environment and lifecycle configuration are determined by centralized configuration files
  * @param key - The service key to register under
  */
-export function Singleton<K extends keyof ServiceMap>(key: K) {
+export function Injectable<K extends keyof ServiceMap>(key: K) {
   return function <T extends { new (...args: any[]): any }>(target: T) {
     const implementationName = target.name;
-    serviceContainer.register(key, () => new target(), true, implementationName);
-  };
-}
-
-/**
- * Transient decorator that registers a service as transient
- * Environment configuration is determined by the Environment.ts file
- * @param key - The service key to register under
- */
-export function Transient<K extends keyof ServiceMap>(key: K) {
-  return function <T extends { new (...args: any[]): any }>(target: T) {
-    const implementationName = target.name;
-    serviceContainer.register(key, () => new target(), false, implementationName);
+    const isSingleton = isServiceSingleton(key as any);
+    serviceContainer.register(key, () => new target(), isSingleton, implementationName);
   };
 }

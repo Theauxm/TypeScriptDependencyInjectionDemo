@@ -1,7 +1,6 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Singleton } from '../decorators';
+import { Injectable } from '../decorators';
 import { IAxiosService } from '../interfaces/IAxiosService';
-import { Environment } from '../Environment';
 import {
   LoginResponse,
   AuthenticateResponse,
@@ -43,7 +42,7 @@ import {
  * Simulates network delay and provides realistic mock responses.
  * Active in Local and Development environments.
  */
-@Singleton("AxiosService")
+@Injectable("AxiosService")
 export class FakeAxiosService implements IAxiosService {
   
   async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {

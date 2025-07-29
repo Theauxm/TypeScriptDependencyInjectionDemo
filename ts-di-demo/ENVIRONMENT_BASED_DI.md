@@ -174,17 +174,20 @@ Make sure the correct service implementation is decorated for the current enviro
 
 ## Testing the System
 
-Use the `EnvironmentDemo` class to test and understand the system:
+Use the service container's built-in debugging methods to test and understand the system:
 
 ```typescript
-import { EnvironmentDemo } from './src/di/EnvironmentDemo';
+import { serviceContainer } from './src/di/ServiceContainer';
 
-// Run the complete demonstration
-EnvironmentDemo.runDemo();
+// Check registration information
+console.log(serviceContainer.getRegistrationInfo());
 
-// Or run individual parts
-EnvironmentDemo.showRegistrationInfo();
-EnvironmentDemo.testServiceResolution();
+// Check registration attempts (useful for debugging conflicts)
+console.log(serviceContainer.getRegistrationAttempts());
+
+// Test service resolution
+const customerService = serviceContainer.resolve("CustomerService");
+console.log(`Resolved: ${customerService.constructor.name}`);
 ```
 
 ## Best Practices
@@ -193,7 +196,7 @@ EnvironmentDemo.testServiceResolution();
 2. **Use descriptive implementation names**: This helps with debugging and logging
 3. **Test environment switching**: Verify that your application works correctly in all environments
 4. **Document service behavior**: Clearly document what each service implementation does
-5. **Use the demo tools**: Leverage `EnvironmentDemo` to understand and debug service registration
+5. **Use the debug tools**: Leverage the service container's built-in debugging methods to understand and debug service registration
 
 ## Troubleshooting
 
@@ -208,5 +211,4 @@ EnvironmentDemo.testServiceResolution();
 
 - `serviceContainer.getRegistrationInfo()`: Shows all registered services
 - `serviceContainer.getRegistrationAttempts()`: Shows all registration attempts
-- `EnvironmentDemo.runDemo()`: Comprehensive system demonstration
 - Console logging: The system logs all registration and resolution activities

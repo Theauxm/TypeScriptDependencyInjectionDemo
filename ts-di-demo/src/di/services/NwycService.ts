@@ -1,8 +1,7 @@
-import { Singleton } from '../decorators';
+import { Injectable } from '../decorators';
 import { INwycService } from '../interfaces/INwycService';
 import { IAxiosService } from '../interfaces/IAxiosService';
 import { serviceContainer } from '../ServiceContainer';
-import { Environment } from '../Environment';
 import { useQuery, useMutation, UseQueryResult, UseMutationResult } from '@tanstack/react-query';
 import {
   ServiceResult,
@@ -52,7 +51,7 @@ import {
  * All methods return ServiceResult<T> for consistent error handling.
  * Active in all environments.
  */
-@Singleton("NwycService")
+@Injectable("NwycService")
 export class NwycService implements INwycService {
   private axiosService: IAxiosService;
 

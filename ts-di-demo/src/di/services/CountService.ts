@@ -1,13 +1,12 @@
-import { Transient } from '../decorators';
+import { Injectable } from '../decorators';
 import { ICountService } from '../interfaces/ICountService';
-import { Environment } from '../Environment';
 
 /**
  * Concrete implementation of ICountService that manages counter state.
  * This service maintains a count value and notifies subscribers of changes.
- * Active in all environments.
+ * Environment and lifecycle configuration are handled centrally.
  */
-@Transient("CountService")
+@Injectable("CountService")
 export class CountService implements ICountService {
   private count: number = 0;
   private subscribers: (() => void)[] = [];
