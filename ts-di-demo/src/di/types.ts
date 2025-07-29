@@ -6,6 +6,20 @@ import { RealCustomerService } from "./services/RealCustomerService";
 import { RealAxiosService } from "./services/RealAxiosService";
 import { FakeAxiosService } from "./services/FakeAxiosService";
 import { NwycService } from "./services/NwycService";
+import { AuthenticationService } from "./services/AuthenticationService";
+import { MemoryStorageService } from "./services/MemoryStorageService";
+
+// Import semantic service interfaces
+import { IAuthenticationService } from "./interfaces/IAuthenticationService";
+import { IStorageService } from "./interfaces/IStorageService";
+import { IUserService } from "./interfaces/IUserService";
+import { ILegislativeService } from "./interfaces/ILegislativeService";
+import { ITopicsService } from "./interfaces/ITopicsService";
+import { IPollingService } from "./interfaces/IPollingService";
+import { IAlertsService } from "./interfaces/IAlertsService";
+import { ICampaignsService } from "./interfaces/ICampaignsService";
+import { IPublicationsService } from "./interfaces/IPublicationsService";
+import { IContentService } from "./interfaces/IContentService";
 
 export interface ServiceMap {
   ColorService: ColorService;
@@ -14,6 +28,10 @@ export interface ServiceMap {
   PaymentService: PaymentService;
   AxiosService: RealAxiosService | FakeAxiosService;
   NwycService: NwycService;
+  
+  // Semantic Services Layer
+  StorageService: IStorageService;
+  AuthenticationService: IAuthenticationService;
 }
 
 export type ServiceKey = keyof ServiceMap;

@@ -10,3 +10,5 @@ import './PaymentService';
 import './RealAxiosService';
 import './FakeAxiosService';
 import './NwycService';
+import './MemoryStorageService';
+import './AuthenticationService';
