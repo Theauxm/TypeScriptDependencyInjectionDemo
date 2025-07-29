@@ -27,7 +27,7 @@ export const AppConfig = {
    * Production: https://nwyc.com
    * Development: https://nwyc.dev.cvoice.io
    */
-  NWYC_API_BASE_URL: 'https://nwyc.com',
+  NWYC_API_BASE_URL: 'https://nwyc.dev.cvoice.io',
 
   /**
    * NWYC API request timeout in milliseconds

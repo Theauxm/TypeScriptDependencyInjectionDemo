@@ -31,7 +31,7 @@ export interface ValidationErrorResponse {
 // ============================================================================
 
 export interface LoginRequest {
-  username: string;
+  user: string;
   password: string;
 }
 

@@ -3,6 +3,7 @@ import { INwycService } from '../interfaces/INwycService';
 import { IAxiosService } from '../interfaces/IAxiosService';
 import { serviceContainer } from '../ServiceContainer';
 import { useQuery, useMutation, UseQueryResult, UseMutationResult } from '@tanstack/react-query';
+import { HttpMethod, RequestOptions } from '../../types/HttpTypes';
 import {
   ServiceResult,
   LoginRequest,
@@ -60,12 +61,60 @@ export class NwycService implements INwycService {
   }
 
   // ============================================================================
+  // Private Request Helper Method
+  // ============================================================================
+
+  /**
+   * Private method to handle all HTTP requests with consistent query parameter and header handling.
+   * Automatically adds format=json to all requests and handles authentication headers.
+   */
+  private async makeRequest<T>(
+    method: HttpMethod,
+    url: string,
+    options: RequestOptions = {}
+  ): Promise<T> {
+    // 1. Build query parameters (always include format=json)
+    const allQueryParams = {
+      format: 'json',
+      ...options.queryParams
+    };
+    
+    // 2. Construct URL with query parameters
+    const queryString = new URLSearchParams(
+      Object.entries(allQueryParams).map(([key, value]) => [key, String(value)])
+    ).toString();
+    const fullUrl = `${url}${queryString ? `?${queryString}` : ''}`;
+    
+    // 3. Build headers (include auth token if provided)
+    const headers = {
+      ...options.headers,
+      ...(options.authToken && { 'Authentication': options.authToken })
+    };
+    
+    // 4. Make the request based on HTTP method
+    switch (method) {
+      case HttpMethod.GET:
+        return await this.axiosService.get<T>(fullUrl, { headers });
+      case HttpMethod.POST:
+        return await this.axiosService.post<T>(fullUrl, options.data, { headers });
+      case HttpMethod.PUT:
+        return await this.axiosService.put<T>(fullUrl, options.data, { headers });
+      case HttpMethod.DELETE:
+        return await this.axiosService.delete<T>(fullUrl, { headers });
+      case HttpMethod.PATCH:
+        return await this.axiosService.patch<T>(fullUrl, options.data, { headers });
+      default:
+        throw new Error(`Unsupported HTTP method: ${method}`);
+    }
+  }
+
+  // ============================================================================
   // Authentication Endpoints
   // ============================================================================
 
   async getLoginForm(): Promise<ServiceResult<LoginResponse>> {
     try {
-      const response = await this.axiosService.get<LoginResponse>('/login');
+      const response = await this.makeRequest<LoginResponse>(HttpMethod.GET, '/login');
       return { success: true, data: response };
     } catch (error) {
       return { success: false, error: this.handleError(error) };
@@ -75,10 +124,11 @@ export class NwycService implements INwycService {
   async login(credentials: LoginRequest): Promise<ServiceResult<SuccessResponse>> {
     try {
       const formData = new URLSearchParams();
-      formData.append('username', credentials.username);
+      formData.append('user', credentials.user);
       formData.append('password', credentials.password);
 
-      const response = await this.axiosService.post<SuccessResponse>('/login', formData, {
+      const response = await this.makeRequest<SuccessResponse>(HttpMethod.POST, '/login', {
+        data: formData,
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       return { success: true, data: response };
@@ -89,11 +139,10 @@ export class NwycService implements INwycService {
 
   async authenticate(params?: GetAuthenticateParams, authToken?: string): Promise<ServiceResult<AuthenticateResponse>> {
     try {
-      const config = authToken ? { headers: { 'Authentication': authToken } } : undefined;
-      const queryParams = params ? new URLSearchParams(params as any).toString() : '';
-      const url = `/authenticate${queryParams ? `?${queryParams}` : ''}`;
-      
-      const response = await this.axiosService.get<AuthenticateResponse>(url, config);
+      const response = await this.makeRequest<AuthenticateResponse>(HttpMethod.GET, '/authenticate', {
+        queryParams: params as Record<string, string | number | boolean>,
+        authToken
+      });
       return { success: true, data: response };
     } catch (error) {
       return { success: false, error: this.handleError(error) };
@@ -102,15 +151,12 @@ export class NwycService implements INwycService {
 
   async authenticatePost(params?: GetAuthenticateParams, authToken?: string): Promise<ServiceResult<AuthenticateResponse>> {
     try {
-      const config = authToken ? { headers: { 'Authentication': authToken } } : undefined;
       const formData = params ? new URLSearchParams(params as any) : undefined;
       
-      const response = await this.axiosService.post<AuthenticateResponse>('/authenticate', formData, {
-        ...config,
-        headers: { 
-          ...config?.headers,
-          'Content-Type': 'application/x-www-form-urlencoded' 
-        }
+      const response = await this.makeRequest<AuthenticateResponse>(HttpMethod.POST, '/authenticate', {
+        data: formData,
+        authToken,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       return { success: true, data: response };
     } catch (error) {
@@ -124,7 +170,7 @@ export class NwycService implements INwycService {
 
   async getFrontPage(): Promise<ServiceResult<FrontPageResponse>> {
     try {
-      const response = await this.axiosService.get<FrontPageResponse>('/frontpage');
+      const response = await this.makeRequest<FrontPageResponse>(HttpMethod.GET, '/frontpage');
       return { success: true, data: response };
     } catch (error) {
       return { success: false, error: this.handleError(error) };
@@ -133,8 +179,8 @@ export class NwycService implements INwycService {
 
   async getDefaultTalkingPoints(authToken: string): Promise<ServiceResult<TalkingPoint[]>> {
     try {
-      const response = await this.axiosService.get<TalkingPoint[]>('/default/talkingpoints', {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<TalkingPoint[]>(HttpMethod.GET, '/default/talkingpoints', {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -148,9 +194,9 @@ export class NwycService implements INwycService {
 
   async getDistrictsByAddress(address: string, authToken: string): Promise<ServiceResult<DistrictsResponse>> {
     try {
-      const queryParams = new URLSearchParams({ address }).toString();
-      const response = await this.axiosService.get<DistrictsResponse>(`/districts/by_address?${queryParams}`, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<DistrictsResponse>(HttpMethod.GET, '/districts/by_address', {
+        queryParams: { address },
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -161,11 +207,10 @@ export class NwycService implements INwycService {
   async getDistrictsByAddressPost(address: string, authToken: string): Promise<ServiceResult<DistrictsResponse>> {
     try {
       const formData = new URLSearchParams({ address });
-      const response = await this.axiosService.post<DistrictsResponse>('/districts/by_address', formData, {
-        headers: { 
-          'Authentication': authToken,
-          'Content-Type': 'application/x-www-form-urlencoded' 
-        }
+      const response = await this.makeRequest<DistrictsResponse>(HttpMethod.POST, '/districts/by_address', {
+        data: formData,
+        authToken,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       return { success: true, data: response };
     } catch (error) {
@@ -175,8 +220,8 @@ export class NwycService implements INwycService {
 
   async getUserRepresentatives(authToken: string): Promise<ServiceResult<string>> {
     try {
-      const response = await this.axiosService.get<string>('/elected_officials/my_reps', {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<string>(HttpMethod.GET, '/elected_officials/my_reps', {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -186,9 +231,9 @@ export class NwycService implements INwycService {
 
   async searchLegislators(params: GetLegislatorSearchParams, authToken: string): Promise<ServiceResult<string>> {
     try {
-      const queryParams = new URLSearchParams(params as any).toString();
-      const response = await this.axiosService.get<string>(`/elected_officials/search?${queryParams}`, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<string>(HttpMethod.GET, '/elected_officials/search', {
+        queryParams: params as Record<string, string | number | boolean>,
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -198,9 +243,9 @@ export class NwycService implements INwycService {
 
   async searchLegislatorsAjax(params: GetLegislatorSearchParams, authToken: string): Promise<ServiceResult<LegislatorSearchResponse>> {
     try {
-      const queryParams = new URLSearchParams(params as any).toString();
-      const response = await this.axiosService.get<LegislatorSearchResponse>(`/elected_officials/search/ajax?${queryParams}`, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<LegislatorSearchResponse>(HttpMethod.GET, '/elected_officials/search/ajax', {
+        queryParams: params as Record<string, string | number | boolean>,
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -214,11 +259,10 @@ export class NwycService implements INwycService {
 
   async getAllTopics(params?: GetTopicsParams, authToken?: string): Promise<ServiceResult<TopicsResponse>> {
     try {
-      const queryParams = params ? new URLSearchParams(params as any).toString() : '';
-      const url = `/topics/all${queryParams ? `?${queryParams}` : ''}`;
-      const config = authToken ? { headers: { 'Authentication': authToken } } : undefined;
-      
-      const response = await this.axiosService.get<TopicsResponse>(url, config);
+      const response = await this.makeRequest<TopicsResponse>(HttpMethod.GET, '/topics/all', {
+        queryParams: params as Record<string, string | number | boolean>,
+        authToken
+      });
       return { success: true, data: response };
     } catch (error) {
       return { success: false, error: this.handleError(error) };
@@ -228,14 +272,10 @@ export class NwycService implements INwycService {
   async getAllTopicsPost(params?: GetTopicsParams, authToken?: string): Promise<ServiceResult<TopicsResponse>> {
     try {
       const formData = params ? new URLSearchParams(params as any) : undefined;
-      const config = authToken ? { headers: { 'Authentication': authToken } } : undefined;
-      
-      const response = await this.axiosService.post<TopicsResponse>('/topics/all', formData, {
-        ...config,
-        headers: { 
-          ...config?.headers,
-          'Content-Type': 'application/x-www-form-urlencoded' 
-        }
+      const response = await this.makeRequest<TopicsResponse>(HttpMethod.POST, '/topics/all', {
+        data: formData,
+        authToken,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       return { success: true, data: response };
     } catch (error) {
@@ -245,8 +285,8 @@ export class NwycService implements INwycService {
 
   async getTopicById(topicId: number, authToken: string): Promise<ServiceResult<TopicResponse>> {
     try {
-      const response = await this.axiosService.get<TopicResponse>(`/topic/get/${topicId}`, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<TopicResponse>(HttpMethod.GET, `/topic/get/${topicId}`, {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -256,8 +296,8 @@ export class NwycService implements INwycService {
 
   async addUserTopic(topicId: number, authToken: string): Promise<ServiceResult<UserTopicsResponse>> {
     try {
-      const response = await this.axiosService.post<UserTopicsResponse>(`/user/topic/add/${topicId}`, null, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<UserTopicsResponse>(HttpMethod.POST, `/user/topic/add/${topicId}`, {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -267,8 +307,8 @@ export class NwycService implements INwycService {
 
   async removeUserTopic(topicId: number, authToken: string): Promise<ServiceResult<UserTopicsResponse>> {
     try {
-      const response = await this.axiosService.post<UserTopicsResponse>(`/user/topic/delete/${topicId}`, null, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<UserTopicsResponse>(HttpMethod.POST, `/user/topic/delete/${topicId}`, {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -282,11 +322,10 @@ export class NwycService implements INwycService {
 
   async getActivePolls(params?: GetPollsParams, authToken?: string): Promise<ServiceResult<PollsResponse>> {
     try {
-      const queryParams = params ? new URLSearchParams(params as any).toString() : '';
-      const url = `/polls/active${queryParams ? `?${queryParams}` : ''}`;
-      const config = authToken ? { headers: { 'Authentication': authToken } } : undefined;
-      
-      const response = await this.axiosService.get<PollsResponse>(url, config);
+      const response = await this.makeRequest<PollsResponse>(HttpMethod.GET, '/polls/active', {
+        queryParams: params as Record<string, string | number | boolean>,
+        authToken
+      });
       return { success: true, data: response };
     } catch (error) {
       return { success: false, error: this.handleError(error) };
@@ -295,11 +334,10 @@ export class NwycService implements INwycService {
 
   async getAllPolls(params?: GetPollsParams, authToken?: string): Promise<ServiceResult<PollsResponse>> {
     try {
-      const queryParams = params ? new URLSearchParams(params as any).toString() : '';
-      const url = `/polls${queryParams ? `?${queryParams}` : ''}`;
-      const config = authToken ? { headers: { 'Authentication': authToken } } : undefined;
-      
-      const response = await this.axiosService.get<PollsResponse>(url, config);
+      const response = await this.makeRequest<PollsResponse>(HttpMethod.GET, '/polls', {
+        queryParams: params as Record<string, string | number | boolean>,
+        authToken
+      });
       return { success: true, data: response };
     } catch (error) {
       return { success: false, error: this.handleError(error) };
@@ -308,8 +346,8 @@ export class NwycService implements INwycService {
 
   async getPollById(pollId: number, authToken: string): Promise<ServiceResult<PollResponse>> {
     try {
-      const response = await this.axiosService.get<PollResponse>(`/poll/get/${pollId}`, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<PollResponse>(HttpMethod.GET, `/poll/get/${pollId}`, {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -319,8 +357,8 @@ export class NwycService implements INwycService {
 
   async getPollDetails(pollId: number, authToken: string): Promise<ServiceResult<PollResponse>> {
     try {
-      const response = await this.axiosService.get<PollResponse>(`/poll/${pollId}`, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<PollResponse>(HttpMethod.GET, `/poll/${pollId}`, {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -330,8 +368,8 @@ export class NwycService implements INwycService {
 
   async voteInPoll(choiceId: number, authToken: string): Promise<ServiceResult<PollResponse>> {
     try {
-      const response = await this.axiosService.post<PollResponse>(`/poll/vote/${choiceId}`, null, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<PollResponse>(HttpMethod.POST, `/poll/vote/${choiceId}`, {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -344,11 +382,10 @@ export class NwycService implements INwycService {
       const formData = new URLSearchParams();
       choices.choice_key.forEach(choice => formData.append('choice_key', choice));
       
-      const response = await this.axiosService.post<PollResponse>(`/poll/${pollId}/vote`, formData, {
-        headers: { 
-          'Authentication': authToken,
-          'Content-Type': 'application/x-www-form-urlencoded' 
-        }
+      const response = await this.makeRequest<PollResponse>(HttpMethod.POST, `/poll/${pollId}/vote`, {
+        data: formData,
+        authToken,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       return { success: true, data: response };
     } catch (error) {
@@ -362,8 +399,8 @@ export class NwycService implements INwycService {
 
   async getUserSettings(authToken: string): Promise<ServiceResult<string>> {
     try {
-      const response = await this.axiosService.get<string>('/settings', {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<string>(HttpMethod.GET, '/settings', {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -373,8 +410,8 @@ export class NwycService implements INwycService {
 
   async getUserProfile(authToken: string): Promise<ServiceResult<UserProfileResponse>> {
     try {
-      const response = await this.axiosService.get<UserProfileResponse>('/settings/profile', {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<UserProfileResponse>(HttpMethod.GET, '/settings/profile', {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -385,11 +422,10 @@ export class NwycService implements INwycService {
   async updateUserProfile(profile: UserProfileUpdate, authToken: string): Promise<ServiceResult<SuccessResponse>> {
     try {
       const formData = new URLSearchParams(profile as any);
-      const response = await this.axiosService.post<SuccessResponse>('/settings/profile', formData, {
-        headers: { 
-          'Authentication': authToken,
-          'Content-Type': 'application/x-www-form-urlencoded' 
-        }
+      const response = await this.makeRequest<SuccessResponse>(HttpMethod.POST, '/settings/profile', {
+        data: formData,
+        authToken,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       return { success: true, data: response };
     } catch (error) {
@@ -399,8 +435,8 @@ export class NwycService implements INwycService {
 
   async getBillingReceipt(authToken: string): Promise<ServiceResult<string>> {
     try {
-      const response = await this.axiosService.get<string>('/settings/billing', {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<string>(HttpMethod.GET, '/settings/billing', {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -410,9 +446,9 @@ export class NwycService implements INwycService {
 
   async downloadReceipt(receiptId: number, authToken: string): Promise<ServiceResult<Blob>> {
     try {
-      const response = await this.axiosService.get<Blob>(`/settings/receipt/download/${receiptId}`, {
-        headers: { 'Authentication': authToken },
-        responseType: 'blob'
+      const response = await this.makeRequest<Blob>(HttpMethod.GET, `/settings/receipt/download/${receiptId}`, {
+        authToken,
+        headers: { responseType: 'blob' }
       });
       return { success: true, data: response };
     } catch (error) {
@@ -422,11 +458,10 @@ export class NwycService implements INwycService {
 
   async getEmailSettings(params?: GetEmailSettingsParams, authToken?: string): Promise<ServiceResult<string>> {
     try {
-      const queryParams = params ? new URLSearchParams(params as any).toString() : '';
-      const url = `/user/emailsettings${queryParams ? `?${queryParams}` : ''}`;
-      const config = authToken ? { headers: { 'Authentication': authToken } } : undefined;
-      
-      const response = await this.axiosService.get<string>(url, config);
+      const response = await this.makeRequest<string>(HttpMethod.GET, '/user/emailsettings', {
+        queryParams: params as Record<string, string | number | boolean>,
+        authToken
+      });
       return { success: true, data: response };
     } catch (error) {
       return { success: false, error: this.handleError(error) };
@@ -436,11 +471,10 @@ export class NwycService implements INwycService {
   async updateEmailSettings(settings: EmailSettingsUpdate, authToken: string): Promise<ServiceResult<SuccessResponse>> {
     try {
       const formData = new URLSearchParams(settings as any);
-      const response = await this.axiosService.post<SuccessResponse>('/user/emailsettings', formData, {
-        headers: { 
-          'Authentication': authToken,
-          'Content-Type': 'application/x-www-form-urlencoded' 
-        }
+      const response = await this.makeRequest<SuccessResponse>(HttpMethod.POST, '/user/emailsettings', {
+        data: formData,
+        authToken,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       return { success: true, data: response };
     } catch (error) {
@@ -454,9 +488,9 @@ export class NwycService implements INwycService {
 
   async searchContent(params: GetSearchParams, authToken: string): Promise<ServiceResult<SearchResponse>> {
     try {
-      const queryParams = new URLSearchParams(params as any).toString();
-      const response = await this.axiosService.get<SearchResponse>(`/search/results?${queryParams}`, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<SearchResponse>(HttpMethod.GET, '/search/results', {
+        queryParams: params as unknown as Record<string, string | number | boolean>,
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -470,11 +504,10 @@ export class NwycService implements INwycService {
 
   async getMessageCongressForm(params?: GetMessageFormParams, authToken?: string): Promise<ServiceResult<MessageFormResponse>> {
     try {
-      const queryParams = params ? new URLSearchParams(params as any).toString() : '';
-      const url = `/message/congress/write${queryParams ? `?${queryParams}` : ''}`;
-      const config = authToken ? { headers: { 'Authentication': authToken } } : undefined;
-      
-      const response = await this.axiosService.get<MessageFormResponse>(url, config);
+      const response = await this.makeRequest<MessageFormResponse>(HttpMethod.GET, '/message/congress/write', {
+        queryParams: params as unknown as Record<string, string | number | boolean>,
+        authToken
+      });
       return { success: true, data: response };
     } catch (error) {
       return { success: false, error: this.handleError(error) };
@@ -492,11 +525,10 @@ export class NwycService implements INwycService {
         }
       });
 
-      const response = await this.axiosService.post<SuccessResponse>('/message/congress/write', formData, {
-        headers: { 
-          'Authentication': authToken,
-          'Content-Type': 'application/x-www-form-urlencoded' 
-        }
+      const response = await this.makeRequest<SuccessResponse>(HttpMethod.POST, '/message/congress/write', {
+        data: formData,
+        authToken,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       return { success: true, data: response };
     } catch (error) {
@@ -506,8 +538,8 @@ export class NwycService implements INwycService {
 
   async getAlertMessageForm(alertId: string, authToken: string): Promise<ServiceResult<MessageFormResponse>> {
     try {
-      const response = await this.axiosService.get<MessageFormResponse>(`/alert/${alertId}/message/congress/write`, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<MessageFormResponse>(HttpMethod.GET, `/alert/${alertId}/message/congress/write`, {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -526,11 +558,10 @@ export class NwycService implements INwycService {
         }
       });
 
-      const response = await this.axiosService.post<SuccessResponse>(`/alert/${alertId}/message/congress/write`, formData, {
-        headers: { 
-          'Authentication': authToken,
-          'Content-Type': 'application/x-www-form-urlencoded' 
-        }
+      const response = await this.makeRequest<SuccessResponse>(HttpMethod.POST, `/alert/${alertId}/message/congress/write`, {
+        data: formData,
+        authToken,
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       });
       return { success: true, data: response };
     } catch (error) {
@@ -540,8 +571,8 @@ export class NwycService implements INwycService {
 
   async resendMessage(messageLogId: number, authToken: string): Promise<ServiceResult<SuccessResponse>> {
     try {
-      const response = await this.axiosService.post<SuccessResponse>(`/message/resend/${messageLogId}`, null, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<SuccessResponse>(HttpMethod.POST, `/message/resend/${messageLogId}`, {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -551,8 +582,8 @@ export class NwycService implements INwycService {
 
   async getUserMessages(authToken: string): Promise<ServiceResult<UserMessagesResponse>> {
     try {
-      const response = await this.axiosService.get<UserMessagesResponse>('/my/messages', {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<UserMessagesResponse>(HttpMethod.GET, '/my/messages', {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -566,11 +597,10 @@ export class NwycService implements INwycService {
 
   async getAlerts(params?: GetAlertsParams, authToken?: string): Promise<ServiceResult<AlertsResponse>> {
     try {
-      const queryParams = params ? new URLSearchParams(params as any).toString() : '';
-      const url = `/alerts${queryParams ? `?${queryParams}` : ''}`;
-      const config = authToken ? { headers: { 'Authentication': authToken } } : undefined;
-      
-      const response = await this.axiosService.get<AlertsResponse>(url, config);
+      const response = await this.makeRequest<AlertsResponse>(HttpMethod.GET, '/alerts', {
+        queryParams: params as unknown as Record<string, string | number | boolean>,
+        authToken
+      });
       return { success: true, data: response };
     } catch (error) {
       return { success: false, error: this.handleError(error) };
@@ -579,11 +609,10 @@ export class NwycService implements INwycService {
 
   async getAlertById(alertId: string, params?: GetAlertParams, authToken?: string): Promise<ServiceResult<AlertResponse>> {
     try {
-      const queryParams = params ? new URLSearchParams(params as any).toString() : '';
-      const url = `/alert/${alertId}${queryParams ? `?${queryParams}` : ''}`;
-      const config = authToken ? { headers: { 'Authentication': authToken } } : undefined;
-      
-      const response = await this.axiosService.get<AlertResponse>(url, config);
+      const response = await this.makeRequest<AlertResponse>(HttpMethod.GET, `/alert/${alertId}`, {
+        queryParams: params as unknown as Record<string, string | number | boolean>,
+        authToken
+      });
       return { success: true, data: response };
     } catch (error) {
       return { success: false, error: this.handleError(error) };
@@ -596,8 +625,8 @@ export class NwycService implements INwycService {
 
   async getCampaigns(authToken: string): Promise<ServiceResult<CampaignsResponse>> {
     try {
-      const response = await this.axiosService.get<CampaignsResponse>('/campaigns', {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<CampaignsResponse>(HttpMethod.GET, '/campaigns', {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -607,8 +636,8 @@ export class NwycService implements INwycService {
 
   async getCampaignById(campaignId: number, authToken: string): Promise<ServiceResult<CampaignResponse>> {
     try {
-      const response = await this.axiosService.get<CampaignResponse>(`/campaign/${campaignId}`, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<CampaignResponse>(HttpMethod.GET, `/campaign/${campaignId}`, {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -618,8 +647,8 @@ export class NwycService implements INwycService {
 
   async getCampaignAlerts(campaignId: number, authToken: string): Promise<ServiceResult<AlertsResponse>> {
     try {
-      const response = await this.axiosService.get<AlertsResponse>(`/campaign/${campaignId}/alerts`, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<AlertsResponse>(HttpMethod.GET, `/campaign/${campaignId}/alerts`, {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -633,8 +662,8 @@ export class NwycService implements INwycService {
 
   async getPublications(authToken: string): Promise<ServiceResult<PublicationsResponse>> {
     try {
-      const response = await this.axiosService.get<PublicationsResponse>('/publications', {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<PublicationsResponse>(HttpMethod.GET, '/publications', {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {
@@ -644,11 +673,10 @@ export class NwycService implements INwycService {
 
   async getPublicationArticles(publicationId: string, params?: GetPublicationArticlesParams, authToken?: string): Promise<ServiceResult<PublicationArticlesResponse>> {
     try {
-      const queryParams = params ? new URLSearchParams(params as any).toString() : '';
-      const url = `/publication/${publicationId}${queryParams ? `?${queryParams}` : ''}`;
-      const config = authToken ? { headers: { 'Authentication': authToken } } : undefined;
-      
-      const response = await this.axiosService.get<PublicationArticlesResponse>(url, config);
+      const response = await this.makeRequest<PublicationArticlesResponse>(HttpMethod.GET, `/publication/${publicationId}`, {
+        queryParams: params as unknown as Record<string, string | number | boolean>,
+        authToken
+      });
       return { success: true, data: response };
     } catch (error) {
       return { success: false, error: this.handleError(error) };
@@ -657,8 +685,8 @@ export class NwycService implements INwycService {
 
   async getArticleById(articleId: string, authToken: string): Promise<ServiceResult<ArticleResponse>> {
     try {
-      const response = await this.axiosService.get<ArticleResponse>(`/article/${articleId}`, {
-        headers: { 'Authentication': authToken }
+      const response = await this.makeRequest<ArticleResponse>(HttpMethod.GET, `/article/${articleId}`, {
+        authToken
       });
       return { success: true, data: response };
     } catch (error) {

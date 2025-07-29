@@ -40,8 +40,8 @@ export const NwycDemoView: React.FC = () => {
 
   const testLogin = () => {
     const credentials: LoginRequest = {
-      username: 'demo@example.com',
-      password: 'demo123'
+      user: 'demo@nwyc.com',
+      password: 'password123'
     };
     handleApiCall('login', () => nwycService.login(credentials));
   };
