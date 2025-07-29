@@ -128,7 +128,7 @@ export class RealAxiosService implements IAxiosService {
     return new Error(`Request Error: ${error.message}`);
   }
 
-  private handleError(error: any): Error {
+  private handleError(error: unknown): Error {
     if (error instanceof Error) {
       return error;
     }

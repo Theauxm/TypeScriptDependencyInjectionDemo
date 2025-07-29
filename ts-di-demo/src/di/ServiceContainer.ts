@@ -1,5 +1,5 @@
 import type { ServiceKey, ServiceMap } from "./types";
-import { Environment, CURRENT_ENVIRONMENT, getExpectedImplementation, isServiceEnabledForEnvironment } from "./Environment";
+import { Environment, CURRENT_ENVIRONMENT, getExpectedImplementation, isServiceEnabledForEnvironment, type ServiceProfile } from "./Environment";
 
 type ServiceFactory<T> = () => T;
 
@@ -28,7 +28,7 @@ class ServiceContainer {
 
     // Check if this service should be registered in the current environment
     // using the Environment.ts configuration
-    if (!isServiceEnabledForEnvironment(key as any, implementationName, CURRENT_ENVIRONMENT)) {
+    if (!isServiceEnabledForEnvironment(key as keyof ServiceProfile, implementationName, CURRENT_ENVIRONMENT)) {
       console.log(`[ServiceContainer] Skipping registration of ${implementationName} for ${key} - not enabled in ${CURRENT_ENVIRONMENT} environment`);
       return;
     }
@@ -37,7 +37,7 @@ class ServiceContainer {
     if (this.registry.has(key)) {
       const existing = this.registry.get(key)!;
       const allAttempts = this.registrationAttempts.get(key) || [];
-      const expectedImpl = getExpectedImplementation(key as any);
+      const expectedImpl = getExpectedImplementation(key as keyof ServiceProfile);
       
       throw new Error(
         `Service conflict detected for '${key}'!\n` +
@@ -62,7 +62,7 @@ class ServiceContainer {
     const meta = this.registry.get(key);
     if (!meta) {
       const attempts = this.registrationAttempts.get(key) || [];
-      const expected = getExpectedImplementation(key as any);
+      const expected = getExpectedImplementation(key as keyof ServiceProfile);
       
       throw new Error(
         `Service '${key}' not registered for environment '${CURRENT_ENVIRONMENT}'!\n` +
@@ -87,8 +87,8 @@ class ServiceContainer {
   /**
    * Get information about registered services for debugging
    */
-  getRegistrationInfo(): { [key: string]: { implementation: string; singleton: boolean } } {
-    const info: any = {};
+  getRegistrationInfo(): Record<ServiceKey, { implementation: string; singleton: boolean }> {
+    const info: Record<ServiceKey, { implementation: string; singleton: boolean }> = {} as Record<ServiceKey, { implementation: string; singleton: boolean }>;
     this.registry.forEach((meta, key) => {
       info[key] = {
         implementation: meta.implementationName,
@@ -101,8 +101,8 @@ class ServiceContainer {
   /**
    * Get all registration attempts for debugging
    */
-  getRegistrationAttempts(): { [key: string]: string[] } {
-    const attempts: any = {};
+  getRegistrationAttempts(): Record<ServiceKey, string[]> {
+    const attempts: Record<ServiceKey, string[]> = {} as Record<ServiceKey, string[]>;
     this.registrationAttempts.forEach((implementations, key) => {
       attempts[key] = implementations;
     });
