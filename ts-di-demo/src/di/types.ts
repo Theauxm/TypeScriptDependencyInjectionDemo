@@ -9,7 +9,13 @@ import { NwycService } from "./services/NwycService";
 import { AuthenticationService } from "./services/AuthenticationService";
 import { MemoryStorageService } from "./services/MemoryStorageService";
 
-// Import semantic service interfaces
+// Import all service interfaces
+import { IColorService } from "./interfaces/IColorService";
+import { ICountService } from "./interfaces/ICountService";
+import { ICustomerService } from "./interfaces/ICustomerService";
+import { IPaymentService } from "./interfaces/IPaymentService";
+import { IAxiosService } from "./interfaces/IAxiosService";
+import { INwycService } from "./interfaces/INwycService";
 import { IAuthenticationService } from "./interfaces/IAuthenticationService";
 import { IStorageService } from "./interfaces/IStorageService";
 import { IUserService } from "./interfaces/IUserService";
@@ -41,6 +47,10 @@ export interface ServiceInterfaceMap {
   PaymentService: IPaymentService;
   AxiosService: IAxiosService;
   NwycService: INwycService;
+  
+  // Semantic Services Layer
+  StorageService: IStorageService;
+  AuthenticationService: IAuthenticationService;
 }
 
 export type ServiceKey = keyof ServiceMap;

@@ -19,7 +19,11 @@ export const DEFAULT_LIFECYCLE_PROFILE = {
   ColorService: ServiceLifecycle.Singleton,
   CountService: ServiceLifecycle.Transient,
   PaymentService: ServiceLifecycle.Transient,
-  NwycService: ServiceLifecycle.Singleton
+  NwycService: ServiceLifecycle.Singleton,
+  
+  // Semantic Services Layer
+  StorageService: ServiceLifecycle.Singleton,
+  AuthenticationService: ServiceLifecycle.Singleton
 } as const;
 
 /**

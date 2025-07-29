@@ -43,6 +43,18 @@ export const DEFAULT_SERVICE_PROFILE = {
     [Environment.Local]: "NwycService",
     [Environment.Development]: "NwycService",
     [Environment.Production]: "NwycService"
+  },
+  
+  // Semantic Services Layer
+  StorageService: {
+    [Environment.Local]: "MemoryStorageService",
+    [Environment.Development]: "MemoryStorageService",
+    [Environment.Production]: "MemoryStorageService"
+  },
+  AuthenticationService: {
+    [Environment.Local]: "AuthenticationService",
+    [Environment.Development]: "AuthenticationService",
+    [Environment.Production]: "AuthenticationService"
   }
 } as const;
 

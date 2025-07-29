@@ -1,4 +1,4 @@
-import { Singleton } from '../decorators';
+import { Injectable } from '../decorators';
 import { IStorageService } from '../interfaces/IStorageService';
 
 /**
@@ -6,7 +6,7 @@ import { IStorageService } from '../interfaces/IStorageService';
  * Stores any type of data in memory for the duration of the application session.
  * Provides a key-value store abstraction that can be used by other services.
  */
-@Singleton("StorageService")
+@Injectable("StorageService")
 export class MemoryStorageService implements IStorageService {
   private storage: Map<string, any> = new Map();
 
