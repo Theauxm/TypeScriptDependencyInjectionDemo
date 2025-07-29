@@ -27,13 +27,7 @@ export class AuthenticationService implements IAuthenticationService {
    */
   async login(credentials: { user: string; password: string }): Promise<{ success: boolean; error?: string }> {
     try {
-      // Step 1: Get login form (may be required for some auth flows)
-      const loginFormResult = await this.nwycService.getLoginForm();
-      if (!loginFormResult.success) {
-        return { success: false, error: loginFormResult.error };
-      }
-
-      // Step 2: Perform login
+      // Perform login - this returns user data and establishes session
       const loginRequest: LoginRequest = {
         user: credentials.user,
         password: credentials.password
@@ -44,14 +38,8 @@ export class AuthenticationService implements IAuthenticationService {
         return { success: false, error: loginResult.error };
       }
 
-      // Step 3: Authenticate to get user data and token
-      const authResult = await this.nwycService.authenticate();
-      if (!authResult.success) {
-        return { success: false, error: authResult.error };
-      }
-
-      // Step 4: Store authentication state
-      this.currentUser = authResult.data.data.user;
+      // Store authentication state from login response
+      this.currentUser = loginResult.data.data.user;
       // In a real implementation, you'd extract the actual token from the response
       // For now, we'll simulate having a token
       const token = `auth_token_${Date.now()}`;
