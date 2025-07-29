@@ -1,9 +1,11 @@
 import { Transient } from '../decorators';
 import { ICountService } from '../interfaces/ICountService';
+import { Environment } from '../Environment';
 
 /**
  * Concrete implementation of ICountService that manages counter state.
  * This service maintains a count value and notifies subscribers of changes.
+ * Active in all environments.
  */
 @Transient("CountService")
 export class CountService implements ICountService {

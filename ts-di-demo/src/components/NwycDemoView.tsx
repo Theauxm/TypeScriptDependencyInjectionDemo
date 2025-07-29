@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useService } from '../hooks/use-service';
 import { AppConfig } from '../config/AppConfig';
+import { Environment } from '../di/Environment';
 import { 
   LoginRequest, 
   GetTopicsParams, 
@@ -149,12 +150,15 @@ export const NwycDemoView: React.FC = () => {
         <p>This demo showcases the <strong>complete NWYC API service wrapper</strong> with all endpoints implemented.</p>
         <p>
           <strong>Current Implementation:</strong> {' '}
-          <span className={`implementation-badge ${AppConfig.USE_REAL_NWYC_API ? 'real' : 'fake'}`}>
-            {AppConfig.USE_REAL_NWYC_API ? '🌐 Real NWYC API' : '🎭 Fake Mock Service'}
+          <span className={`implementation-badge ${AppConfig.ENVIRONMENT === Environment.Production ? 'real' : 'fake'}`}>
+            {AppConfig.ENVIRONMENT === Environment.Production ? '🌐 Real NWYC API' : '🔧 Fake Mock Service'}
           </span>
         </p>
         <p>
-          <em>Change the <code>USE_REAL_NWYC_API</code> setting in AppConfig.ts and restart to switch implementations.</em>
+          <strong>Current Environment:</strong> <code>{AppConfig.ENVIRONMENT}</code>
+        </p>
+        <p>
+          <em>Change the <code>CURRENT_ENVIRONMENT</code> setting in Environment.ts and restart to switch implementations.</em>
         </p>
       </div>
 
@@ -345,7 +349,7 @@ export const NwycDemoView: React.FC = () => {
           <li><strong>Error Handling:</strong> Consistent <code>ServiceResult&lt;T&gt;</code> pattern</li>
           <li><strong>TanStack Query:</strong> Integrated for caching and state management</li>
           <li><strong>Type Safety:</strong> Complete TypeScript coverage for all endpoints</li>
-          <li><strong>Configuration:</strong> Real vs Mock determined by <code>AppConfig.USE_REAL_NWYC_API</code></li>
+          <li><strong>Configuration:</strong> Real vs Mock determined by <code>AppConfig.ENVIRONMENT</code></li>
         </ul>
       </div>
 

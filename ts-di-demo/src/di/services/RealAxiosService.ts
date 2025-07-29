@@ -2,12 +2,14 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } f
 import { Singleton } from '../decorators';
 import { IAxiosService } from '../interfaces/IAxiosService';
 import { AppConfig } from '../../config/AppConfig';
+import { Environment } from '../Environment';
 
 /**
  * Real implementation of IAxiosService that makes actual HTTP requests using Axios.
  * Handles network errors, HTTP errors, and provides proper timeout management.
+ * Active in Production environment.
  */
-@Singleton("AxiosService", AppConfig.USE_REAL_NWYC_API)
+@Singleton("AxiosService")
 export class RealAxiosService implements IAxiosService {
   private axiosInstance: AxiosInstance;
 

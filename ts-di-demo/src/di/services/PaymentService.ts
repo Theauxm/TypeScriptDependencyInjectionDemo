@@ -2,6 +2,7 @@ import { Transient } from "../decorators";
 import type { ICustomerService } from "../interfaces/ICustomerService";
 import { IPaymentService } from "../interfaces/IPaymentService";
 import { serviceContainer } from "../ServiceContainer";
+import { Environment } from "../Environment";
 
 @Transient("PaymentService")
 export class PaymentService implements IPaymentService {

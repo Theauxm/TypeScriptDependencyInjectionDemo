@@ -1,12 +1,15 @@
+import { Environment, CURRENT_ENVIRONMENT } from '../di/Environment';
+
 /**
  * Application configuration settings
+ * Now uses environment-based configuration instead of individual boolean flags
  */
 export const AppConfig = {
   /**
-   * Determines whether to use the real API service or the fake/mock service
-   * Set to true for real API calls, false for mock data
+   * Current application environment
+   * This determines which service implementations are used
    */
-  USE_REAL_API: false,
+  ENVIRONMENT: CURRENT_ENVIRONMENT,
 
   /**
    * GraphQL API endpoint
@@ -20,12 +23,6 @@ export const AppConfig = {
   REQUEST_TIMEOUT: 10000,
 
   /**
-   * Determines whether to use the real NWYC API service or the fake/mock service
-   * Set to true for real NWYC API calls, false for mock data
-   */
-  USE_REAL_NWYC_API: false,
-
-  /**
    * NWYC API base URL
    * Production: https://nwyc.com
    * Development: https://nwyc.dev.cvoice.io
@@ -36,4 +33,5 @@ export const AppConfig = {
    * NWYC API request timeout in milliseconds
    */
   NWYC_REQUEST_TIMEOUT: 10000,
+
 } as const;
