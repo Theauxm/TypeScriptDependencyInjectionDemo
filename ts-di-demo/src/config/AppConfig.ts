@@ -6,7 +6,7 @@ export const AppConfig = {
    * Determines whether to use the real API service or the fake/mock service
    * Set to true for real API calls, false for mock data
    */
-  USE_REAL_API: false,
+  USE_REAL_API: true,
 
   /**
    * GraphQL API endpoint
@@ -23,14 +23,14 @@ export const AppConfig = {
    * Determines whether to use the real NWYC API service or the fake/mock service
    * Set to true for real NWYC API calls, false for mock data
    */
-  USE_REAL_NWYC_API: false,
+  USE_REAL_NWYC_API: true,
 
   /**
    * NWYC API base URL
    * Production: https://nwyc.com
    * Development: https://nwyc.dev.cvoice.io
    */
-  NWYC_API_BASE_URL: 'https://nwyc.com',
+  NWYC_API_BASE_URL: 'https://nwyc.dev.cvoice.io',
 
   /**
    * NWYC API request timeout in milliseconds
