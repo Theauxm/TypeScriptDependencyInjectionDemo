@@ -27,6 +27,17 @@ const CONFIG_PROFILES = {
     LOG_LEVEL: 'info' as const,
     ENABLE_MOCK_DATA: false,
   },
+  [Environment.Test]: {
+    GRAPHQL_ENDPOINT: '/api/customers',
+    NWYC_API_BASE_URL: 'http://localhost:3001', // Test environment uses fake services
+    REQUEST_TIMEOUT: 1000, // Fast timeout for tests
+    NWYC_REQUEST_TIMEOUT: 1000,
+    API_RETRY_ATTEMPTS: 1, // Minimal retries for tests
+    CACHE_TTL: 0, // No caching in tests
+    DEBUG_MODE: true,
+    LOG_LEVEL: 'debug' as const,
+    ENABLE_MOCK_DATA: true,
+  },
   [Environment.Production]: {
     GRAPHQL_ENDPOINT: '/api/customers',
     NWYC_API_BASE_URL: 'https://nwyc.com', // Production URL
