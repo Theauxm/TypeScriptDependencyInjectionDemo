@@ -10,9 +10,22 @@ export enum Environment {
 }
 
 /**
- * Current environment - can be overridden by environment variable or build configuration
+ * Generic environment detection utility
+ * Consumers can override this by providing their own environment detection logic
  */
-export const CURRENT_ENVIRONMENT = (process.env.REACT_APP_ENVIRONMENT as Environment) || Environment.Local;
+export function detectEnvironment(): string {
+  // Try common environment variable patterns
+  if (typeof process !== 'undefined' && process.env) {
+    return process.env.NODE_ENV || 
+           process.env.REACT_APP_ENVIRONMENT || 
+           process.env.VUE_APP_ENVIRONMENT ||
+           process.env.ENVIRONMENT ||
+           Environment.Local;
+  }
+  
+  // Fallback for browser environments without process.env
+  return Environment.Local;
+}
 
 /**
  * Utility function to check if a service should be enabled

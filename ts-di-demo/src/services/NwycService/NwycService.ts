@@ -1,7 +1,7 @@
 import { Injectable } from '../../di-lib/decorators';
 import { INwycService } from './INwycService';
 import { IAxiosService } from '../AxiosService/IAxiosService';
-import { serviceContainer } from '../../di-lib/ServiceContainer';
+import { demoServiceContainer } from '../../config/DIInitialization';
 import { useQuery, useMutation, UseQueryResult, UseMutationResult } from '@tanstack/react-query';
 import { HttpMethod, RequestOptions } from '../../types/HttpTypes';
 import {
@@ -57,7 +57,7 @@ export class NwycService implements INwycService {
   private axiosService: IAxiosService;
 
   constructor() {
-    this.axiosService = serviceContainer.resolve("AxiosService");
+    this.axiosService = demoServiceContainer.resolve("AxiosService");
   }
 
   // ============================================================================

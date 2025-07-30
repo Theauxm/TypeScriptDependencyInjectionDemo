@@ -1,14 +1,14 @@
 import { Injectable } from '../../di-lib/decorators';
 import type { ICustomerService } from '../CustomerService/ICustomerService';
 import { IPaymentService } from './IPaymentService';
-import { serviceContainer } from '../../di-lib/ServiceContainer';
+import { demoServiceContainer } from '../../config/DIInitialization';
 
 @Injectable("PaymentService")
 export class PaymentService implements IPaymentService {
   private customersService: ICustomerService;
 
   constructor() {
-    this.customersService = serviceContainer.resolve("CustomerService");
+    this.customersService = demoServiceContainer.resolve("CustomerService");
   }
 
   async processPayment(): Promise<void> {

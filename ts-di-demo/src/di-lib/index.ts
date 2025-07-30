@@ -4,10 +4,11 @@
  * without being tied to any specific service implementations
  */
 
-export { ServiceContainer, serviceContainer } from './ServiceContainer';
-export { Injectable } from './decorators';
-export { Environment, isServiceEnabledForEnvironment, getExpectedImplementation } from './Environment';
+export { ServiceContainer } from './ServiceContainer';
+export { Injectable, setActiveContainer } from './decorators';
+export { Environment, isServiceEnabledForEnvironment, getExpectedImplementation, detectEnvironment } from './Environment';
 export { ServiceLifecycle, isServiceSingleton, getServiceLifecycle } from './ServiceLifecycle';
+export { getService, useService, createContainerHooks } from './react';
 export type { 
   ServiceKey, 
   ServiceMap, 

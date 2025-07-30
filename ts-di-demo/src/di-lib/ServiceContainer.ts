@@ -49,7 +49,6 @@ class ServiceContainer<
       this.configuration.environmentConfig,
       this.configuration.currentEnvironment
     )) {
-      console.log(`[ServiceContainer] Skipping registration of ${implementationName} for ${String(key)} - not enabled in ${this.configuration.currentEnvironment} environment`);
       return;
     }
 
@@ -74,7 +73,6 @@ class ServiceContainer<
       );
     }
 
-    console.log(`[ServiceContainer] Registering ${implementationName} for ${String(key)} in ${this.configuration.currentEnvironment} environment`);
     this.registry.set(key, { 
       factory, 
       singleton, 
@@ -106,13 +104,11 @@ class ServiceContainer<
     
     if (meta.singleton) {
       if (!meta.instance) {
-        console.log(`[ServiceContainer] Creating singleton instance of ${meta.implementationName} for ${String(key)}`);
         meta.instance = meta.factory();
       }
       return meta.instance;
     }
     
-    console.log(`[ServiceContainer] Creating transient instance of ${meta.implementationName} for ${String(key)}`);
     return meta.factory();
   }
 
@@ -143,4 +139,3 @@ class ServiceContainer<
 }
 
 export { ServiceContainer };
-export const serviceContainer = new ServiceContainer<ServiceMap>();

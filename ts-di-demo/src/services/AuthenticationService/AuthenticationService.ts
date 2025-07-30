@@ -2,7 +2,7 @@ import { Injectable } from '../../di-lib/decorators';
 import { IAuthenticationService } from './IAuthenticationService';
 import { INwycService } from '../NwycService/INwycService';
 import { IStorageService } from '../StorageService/IStorageService';
-import { serviceContainer } from '../../di-lib/ServiceContainer';
+import { demoServiceContainer } from '../../config/DIInitialization';
 import { UserProfile, LoginRequest } from '../../types/NwycTypes';
 
 /**
@@ -18,8 +18,8 @@ export class AuthenticationService implements IAuthenticationService {
   private readonly AUTH_TOKEN_KEY = 'auth_token';
 
   constructor() {
-    this.nwycService = serviceContainer.resolve("NwycService");
-    this.storageService = serviceContainer.resolve("StorageService");
+    this.nwycService = demoServiceContainer.resolve("NwycService");
+    this.storageService = demoServiceContainer.resolve("StorageService");
   }
 
   /**

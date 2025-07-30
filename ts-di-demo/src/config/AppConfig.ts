@@ -1,4 +1,7 @@
-import { Environment, CURRENT_ENVIRONMENT } from '../di-lib/Environment';
+import { Environment, detectEnvironment } from '../di-lib/Environment';
+
+// Get the current environment using the generic detection utility
+const CURRENT_ENVIRONMENT = detectEnvironment() as Environment;
 
 /**
  * Environment-specific configuration profiles
