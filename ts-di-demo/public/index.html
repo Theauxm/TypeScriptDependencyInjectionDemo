@@ -6,9 +6,41 @@
     <meta name="theme-color" content="#000000" />
     <meta name="description" content="TypeScript React Dependency Injection Demo" />
     <title>TS DI Demo</title>
+    <script>
+      // Debug information for Firefox compatibility
+      console.log('Browser:', navigator.userAgent);
+      console.log('JavaScript enabled');
+      
+      // Check for critical features
+      console.log('Object.assign:', typeof Object.assign);
+      console.log('Promise:', typeof Promise);
+      console.log('Array.from:', typeof Array.from);
+      console.log('Symbol:', typeof Symbol);
+      console.log('Map:', typeof Map);
+      console.log('Set:', typeof Set);
+    </script>
+    <script src="%PUBLIC_URL%/polyfills.js"></script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div id="root">
+      <div style="padding: 20px; font-family: Arial, sans-serif;">
+        <h2>Loading React Application...</h2>
+        <p>If this message persists, there may be a JavaScript compatibility issue.</p>
+        <p>Please check the browser console for error messages.</p>
+      </div>
+    </div>
+    <script>
+      // Additional debugging
+      window.addEventListener('error', function(e) {
+        console.error('Global error:', e.error);
+        document.getElementById('root').innerHTML += '<div style="color: red; margin-top: 10px;">Error: ' + e.message + '</div>';
+      });
+      
+      window.addEventListener('unhandledrejection', function(e) {
+        console.error('Unhandled promise rejection:', e.reason);
+        document.getElementById('root').innerHTML += '<div style="color: red; margin-top: 10px;">Promise rejection: ' + e.reason + '</div>';
+      });
+    </script>
   </body>
 </html>
